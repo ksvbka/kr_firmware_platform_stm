@@ -4,11 +4,11 @@
 
 /* Timer structure: */
 typedef struct {
-    timer_type_t type;          /* second timer or milisecond timer, repeat or not*/
-    uint16_t       periodic;      /* timeout value*/
-    uint16_t       stop_point;    /* tick number when expries*/
-    callback timer_callback;    /* Callback function when timer expries*/
-    void*    param;             /* Param for callback*/
+    timer_type_t    type;          /* second timer or milisecond timer, repeat or not*/
+    uint16_t        periodic;      /* timeout value*/
+    uint16_t        stop_point;    /* tick number when expries*/
+    callback        timer_callback;/* Callback function when timer expries*/
+    void*           param;         /* Param for callback*/
 } timer_t;
 
 /* Global internal timer list */
