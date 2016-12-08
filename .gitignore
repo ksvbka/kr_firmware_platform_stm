@@ -27,7 +27,11 @@
 *.i*86
 *.x86_64
 *.hex
-
+*.bin
+*.elf
+*.lst
+*.map
+/build/
 # Debug files
 *.dSYM/
 *.su
