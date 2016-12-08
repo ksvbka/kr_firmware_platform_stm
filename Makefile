@@ -5,7 +5,7 @@ OBJCOPY=arm-none-eabi-objcopy
 OBJDUMP=arm-none-eabi-objdump
 SIZE=arm-none-eabi-size
 
-PROJ_NAME=kr_platform_stm32
+PROJ_NAME=kr_firmware_platform
 
 # Location of the Libraries folder from the STM32F0xx Standard Peripheral Library
 STD_PERIPH_LIB=libraries
@@ -22,7 +22,6 @@ OPENOCD_PROC_FILE=extra/stm32f0-openocd.cfg
 ###################################################
 
 CFLAGS  = -Wall -g -std=c99 -Os
-#CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m0 -march=armv6s-m
 CFLAGS += -mlittle-endian -mcpu=cortex-m0  -march=armv6-m -mthumb
 CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -Wl,--gc-sections -Wl,-Map=$(BIN_DIR)/$(PROJ_NAME).map
@@ -36,7 +35,7 @@ ROOT=$(shell pwd)
 BUILD_DIR 	= $(ROOT)/build
 OBJ_DIR		= $(BUILD_DIR)/obj
 BIN_DIR		= $(BUILD_DIR)/bin
-OUT 		= $(BIN_DIR)/$(PROJ_NAME).elf
+OUT 		= $(BIN_DIR)/$(PROJ_NAME)
 
 # add startup file to build
 SRC_STARTUP_DIR = $(ROOT)/device/
@@ -55,8 +54,8 @@ OBJ_SV		= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_SV)))
 
 # Application source dir
 SRC_APPDIR 	= $(ROOT)/application
-SRC_APP 	=$(wildcard $(SRC_APPDIR)/*.c)
-OBJ_APP 	=$(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_APP)))
+SRC_APP 	= $(wildcard $(SRC_APPDIR)/*.c)
+OBJ_APP 	= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_APP)))
 
 CFLAGS += -I $(STD_PERIPH_LIB) -I $(STD_PERIPH_LIB)/CMSIS/Device/ST/STM32F0xx/Include
 CFLAGS += -I $(STD_PERIPH_LIB)/CMSIS/Include -I $(STD_PERIPH_LIB)/STM32F0xx_StdPeriph_Driver/inc
@@ -79,15 +78,15 @@ lib:
 
 proj: 	$(BIN_DIR)/$(PROJ_NAME).elf
 
-$(OUT) : $(OBJ_HW) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
+$(OUT).elf : $(OBJ_HW) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
 	@echo Lingking ...
 	@mkdir -p $(BIN_DIR)
 	@$(CC) $(CFLAGS) $^ -o $@ -L$(STD_PERIPH_LIB) -lstm32f0 -L$(LDSCRIPT_INC) -Tstm32f0.ld
 
-	@$(OBJCOPY) -O ihex $(OUT) $(BIN_DIR)/$(PROJ_NAME).hex
-	@$(OBJCOPY) -O binary $(OUT) $(BIN_DIR)/$(PROJ_NAME).bin
-	@$(OBJDUMP) -St $(OUT) >$(BIN_DIR)/$(PROJ_NAME).lst
-	$(SIZE) $(OUT)
+	@$(OBJCOPY) -O ihex $(OUT).elf $(BIN_DIR)/$(PROJ_NAME).hex
+	@$(OBJCOPY) -O binary $(OUT).elf $(BIN_DIR)/$(PROJ_NAME).bin
+	@$(OBJDUMP) -St $(OUT).elf >$(BIN_DIR)/$(PROJ_NAME).lst
+	$(SIZE) $(OUT).elf
 	@echo Successful!
 
 $(OBJ_DIR)/%.o:$(SRC_STARTUP_DIR)/%.s
@@ -113,8 +112,11 @@ $(OBJ_DIR)/%.o:$(SRC_APPDIR)/%.c
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-program: $(BIN_DIR)/$(PROJ_NAME).bin
+program: $(OUT).bin
 	openocd -f $(OPENOCD_BOARD_DIR)/stm32f0discovery.cfg -f $(OPENOCD_PROC_FILE) -c "stm_flash `pwd`/build/bin/$(PROJ_NAME).bin" -c shutdown
+
+debug: $(OUT).elf
+	. extra/debug_nemiver.sh
 
 clean:
 	find ./ -name '*~' | xargs rm -f
@@ -122,4 +124,7 @@ clean:
 	rm -rf $(BIN_DIR)
 
 distclean: clean
+	find ./ -name '*~' | xargs rm -f
+	rm -f *.o
+	rm -rf $(BIN_DIR)
 	$(MAKE) -C $(STD_PERIPH_LIB) clean
