@@ -62,6 +62,7 @@ CFLAGS += -I $(STD_PERIPH_LIB)/CMSIS/Include -I $(STD_PERIPH_LIB)/STM32F0xx_StdP
 CFLAGS += -include $(STD_PERIPH_LIB)/stm32f0xx_conf.h
 CFLAGS += -I $(ROOT)/hardware/include
 CFLAGS += -I $(ROOT)/service/include
+CFLAGS += -I $(ROOT)/application
 
 # need if you want to build with -DUSE_CMSIS
 #SRCS += stm32f0_discovery.c
