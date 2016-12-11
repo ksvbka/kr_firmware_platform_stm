@@ -91,11 +91,16 @@ void gpio_write_port(uint8_t port, uint16_t port_value)
         return GPIO_Write(GPIOx, port_value);
 }
 
-/*TODO: currently support irq on line0, need to fix to support line0 - line15*/
+
 bool gpio_init_irq(uint8_t pin, uint8_t edge)
 {
-        /*Set gpio as input float pin (no pull resistor*/
-        gpio_init(pin, GPIO_IN);
+        /* Config gpio as input*/
+        if (USE_INTERNAL_RES == 0)
+                /* Use internal pullup*/
+                gpio_init(pin, GPIO_IN_PU);
+        else
+                /* Use external pullup*/
+                gpio_init(pin, GPIO_IN);
 
         /* Enable SYSCFG clock */
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
@@ -143,11 +148,9 @@ void gpio_irq_register_callback(callback fn_callback)
         g_gpio_irq_callback = fn_callback;
 }
 
-/* PLEASE FIX ME! ONLY SUCCESS ON GPIO PA0! */
-void gpio_irq_handler(void)
+void gpio_irq_exti0_1_handler(void)
 {
         /* Determine which line have interrupt*/
-        uint8_t gpio_irq;
         uint8_t line_irq;
         if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
                 line_irq = 0;
@@ -157,15 +160,36 @@ void gpio_irq_handler(void)
                 line_irq = 1;
                 /* Clear the EXTI line 1 pending bit */
                 EXTI_ClearITPendingBit(EXTI_Line1);
-        } else if (EXTI_GetITStatus(EXTI_Line2) != RESET) {
+        }
+        uint8_t gpio_irq = GPIO_PIN(GPIO_Px_IRQ, line_irq);
+        g_gpio_irq_callback(&gpio_irq);
+
+}
+
+void gpio_irq_exti2_3_handler(void)
+{
+        /* Determine which line have interrupt*/
+        uint8_t line_irq;
+        if (EXTI_GetITStatus(EXTI_Line2) != RESET) {
                 line_irq = 2;
                 /* Clear the EXTI line 2 pending bit */
                 EXTI_ClearITPendingBit(EXTI_Line2);
-        } else if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
+        } else {
                 line_irq = 3;
                 /* Clear the EXTI line 3 pending bit */
                 EXTI_ClearITPendingBit(EXTI_Line3);
-        } else if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
+        }
+        uint8_t gpio_irq = GPIO_PIN(GPIO_Px_IRQ, line_irq);
+        g_gpio_irq_callback(&gpio_irq);
+
+}
+
+void gpio_irq_exti4_15_handler(void)
+{
+        /* Determine which line have interrupt*/
+        uint8_t line_irq;
+
+        if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
                 line_irq = 4;
                 /* Clear the EXTI line 4 pending bit */
                 EXTI_ClearITPendingBit(EXTI_Line4);
@@ -214,9 +238,8 @@ void gpio_irq_handler(void)
                 /* Clear the EXTI line 15 pending bit */
                 EXTI_ClearITPendingBit(EXTI_Line15);
         }
-        gpio_irq = GPIO_PIN(GPIO_Px_IRQ, line_irq);
+        uint8_t gpio_irq = GPIO_PIN(GPIO_Px_IRQ, line_irq);
         g_gpio_irq_callback(&gpio_irq);
-
 }
 
 /* Implement Helper function */

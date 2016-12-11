@@ -6,9 +6,9 @@
 #include "gpio.h"
 #include "uart.h"
 
-uint8_t led_3 = GPIO_PIN(GPIO_PC, 9);
-uint8_t led_4 = GPIO_PIN(GPIO_PC, 8);
-uint8_t button = GPIO_PIN(GPIO_PA, 0);
+uint8_t led_3   = GPIO_PIN(GPIO_PC, 9);
+uint8_t led_4   = GPIO_PIN(GPIO_PC, 8);
+uint8_t button  = GPIO_PIN(GPIO_PA, 0);
 
 void pulse_led_3(void* param)
 {

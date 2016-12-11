@@ -124,16 +124,16 @@ void SysTick_Handler(void)
   */
 void EXTI0_1_IRQHandler(void)
 {
-    gpio_irq_handler();
+    gpio_irq_exti0_1_handler();
 }
 
 void EXTI2_3_IRQHandler(void)
 {
-    gpio_irq_handler();
+    gpio_irq_exti2_3_handler();
 }
 void EXTI4_15_IRQHandler(void)
 {
-    gpio_irq_handler();
+    gpio_irq_exti4_15_handler();
 }
 
 void USART1_IRQHandler(void)

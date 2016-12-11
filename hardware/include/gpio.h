@@ -8,10 +8,13 @@
  *  Use uint8_t to encode gpio.
  *  Bit 0-4 use for gpio pin number (0 - 15)
  *  Bit 5-7 use for GPIO_TypeDef (A,B,C,D,F)
+ *
+ *  To define a gpio use Macro as folow
+ *  uint8_t led = GPIO_PIN(GPIO_PA, 15) //RCC_AHBPeriph_GPIOA and GPIO_Pin_15
  */
-// typedef uint8_t gpio_t;
-// eg:
-// uint8_t led = GPIO_PIN(GPIO_PA, 15) /* RCC_AHBPeriph_GPIOA and GPIO_Pin_15*/
+
+/* Define option use register pull up/down as internal (0) or external (1)*/
+#define USE_INTERNAL_RES 1
 
 /* Define port of GPIO - RCC_AHBPeriph_GPIOx (x = A,B,C,D,F)*/
 #define GPIO_PA 1
