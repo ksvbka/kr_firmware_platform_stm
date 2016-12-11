@@ -1,3 +1,9 @@
+/*
+* @Author: Trung Kien
+* @Date:   2016-12-11 23:29:06
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2016-12-11 23:30:54
+*/
 #ifndef __TYPE_DEF_H__
 #define __TYPE_DEF_H__
 

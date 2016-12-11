@@ -1,3 +1,9 @@
+/*
+* @Author: Trung Kien
+* @Date:   2016-12-11 17:41:41
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2016-12-11 23:32:07
+*/
 #include "timer.h"
 
 #define MAX_TIME_COUNT 10

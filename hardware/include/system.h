@@ -1,3 +1,9 @@
+/*
+* @Author: Trung Kien
+* @Date:   2016-12-11 20:11:27
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2016-12-11 23:31:10
+*/
 #ifndef __SYSTEM_H__
 #define __SYSTEM_H__
 

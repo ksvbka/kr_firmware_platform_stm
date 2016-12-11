@@ -1,3 +1,9 @@
+/*
+* @Author: Trung Kien
+* @Date:   2016-12-11 23:29:12
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2016-12-11 23:30:26
+*/
 #include "stm32f0_discovery.h"
 
 #include "system.h"

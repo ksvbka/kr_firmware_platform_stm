@@ -1,3 +1,9 @@
+/*
+* @Author: Trung Kien
+* @Date:   2016-12-11 20:12:21
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2016-12-11 23:31:16
+*/
 #ifndef __UART_H__
 #define __UART_H__
 

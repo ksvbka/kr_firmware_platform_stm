@@ -1,3 +1,9 @@
+/*
+* @Author: Trung Kien
+* @Date:   2016-12-11 20:12:51
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2016-12-11 23:31:27
+*/
 #include "system.h"
 #include "stm32f0xx.h"
 #include "typedef.h"
