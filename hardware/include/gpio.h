@@ -13,15 +13,17 @@
  *  uint8_t led = GPIO_PIN(GPIO_PA, 15) //RCC_AHBPeriph_GPIOA and GPIO_Pin_15
  */
 
-/* Define option use register pull up/down as internal (0) or external (1)*/
-#define USE_INTERNAL_RES FALSE
-
 /* Define port of GPIO - RCC_AHBPeriph_GPIOx (x = A,B,C,D,F)*/
 #define GPIO_PA 1
 #define GPIO_PB 2
 #define GPIO_PC 3
 #define GPIO_PD 4
 #define GPIO_PF 5
+
+/* Define option use register pull up/down as internal (0) or external (1)*/
+#define USE_INTERNAL_RES        FALSE
+/* Define Port user for irq, default is GPIO_PA => PAx (x = 0:15) can config as gpio irq*/
+#define GPIO_Px_IRQ     GPIO_PA
 
 /* Define option for enable module GPIOx (x = A,B,C,D,F)*/
 #define GPIO_PA_ENABLE (GPIO_PA << 0)
@@ -33,10 +35,10 @@
 
 #define PORT_OFFSET 5 /*bit*/
 
-#define GPIO_MASK(pin)      ((uint16_t)(1 << (pin)))
+#define GPIO_MASK(pin) ((uint16_t)(1 << (pin)))
 
-#define GPIO_PIN(port, pin) ((uint8_t)( (port << PORT_OFFSET) | pin ))
-#define GET_PORT(gpio) ((uint8_t)(gpio >> PORT_OFFSET))
+#define GPIO_PIN(port, pin)  ((uint8_t)( (port << PORT_OFFSET) | pin ))
+#define GET_PORT(gpio)  ((uint8_t)(gpio >> PORT_OFFSET))
 #define GET_PIN(gpio)  (GPIO_MASK(gpio & 0x1F))
 
 
@@ -52,9 +54,6 @@
 #define  GPIO_FALLING           0
 #define  GPIO_RISING            1
 #define  GPIO_RISING_FALLING    2
-
-/* User GPIO_PA [pin0 : pin15] for extern irq (except PA9 PA10 for uart)*/
-#define GPIO_Px_IRQ             GPIO_PA
 
 void gpio_module_init(uint8_t port_enable); /*eg: PORT_A + PORT_C*/
 
