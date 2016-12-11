@@ -45,7 +45,7 @@ int main(void) {
     uart_irq_register_callback(print_data);
 
     uart_write("\n Test uart_irq");
-    timer_create(MILI_TIMER_REPEAT, 500, pulse_led_3, NULL);
+    timer_create(MILI_TIMER_REPEAT, 200, pulse_led_3, NULL);
     while (1) {
         handle_timer_events();
     }

@@ -70,11 +70,7 @@ void gpio_clear(uint8_t pin) {
 
 void gpio_toggle(uint8_t pin) {
     GPIO_TypeDef* GPIOx = get_gpio_port(pin);
-    bool state = GPIO_ReadOutputDataBit(GPIOx, GET_PIN(pin));
-    if (state)
-        gpio_clear(pin);
-    else
-        gpio_set(pin);
+    GPIOx->ODR ^= GET_PIN(pin);
 }
 
 void gpio_write(uint8_t pin, bool value) {
@@ -86,6 +82,7 @@ void gpio_write_port(uint8_t port, uint16_t port_value) {
     return GPIO_Write(GPIOx, port_value);
 }
 
+/*TODO: currently support irq on line0, need to fix to support line0 - line15*/
 bool gpio_init_irq(uint8_t pin, uint8_t edge) {
     /*Set gpio as input float pin (no pull resistor*/
     gpio_init(pin, GPIO_IN);
@@ -93,7 +90,7 @@ bool gpio_init_irq(uint8_t pin, uint8_t edge) {
     /* Enable SYSCFG clock */
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
-    /* Connect EXTI0 Line to pin */
+    /* Connect EXTIx Line to pin */
     uint8_t port_source = get_exti_port_source(pin);
     uint8_t pin_soure   = get_pin_source(pin);
     SYSCFG_EXTILineConfig(port_source, pin_soure);
