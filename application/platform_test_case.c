@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-30 22:30:36
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-12 00:15:49
+* @Last Modified time: 2016-12-12 00:29:56
 */
 
 #include "platform_test_case.h"
@@ -13,25 +13,25 @@ static volatile bool g_test_ok = FALSE;
 
 void platform_test_case(void)
 {
-    system_test();
-    uart_test();
-    gpio_test();
+        system_test();
+        uart_test();
+        gpio_test();
 
-    // /*Service testing*/
-    timer_test();
-    // event_test();
-    // pwm_test();
-    // adc_test();
-    // // mpu6050_test();
+        // /*Service testing*/
+        timer_test();
+        // event_test();
+        // pwm_test();
+        // adc_test();
+        // // mpu6050_test();
 
-    // /* Supper loop*/
-    while (1) {
-        handle_timer_events();
-        // handle_event_queue();
-    }
-    // pwm_test_dimming_led();
+        // /* Supper loop*/
+        while (1) {
+                handle_timer_events();
+                // handle_event_queue();
+        }
+        // pwm_test_dimming_led();
 
-    // lcd_5110();
+        // lcd_5110();
 }
 
 
@@ -44,27 +44,27 @@ void system_test(void)
 /* Test uart first for loging data*/
 void uart_test(void)
 {
-    g_test_ok = FALSE;
-    uart_init(UART_BAUDRATE_115200, UART_ENABLE_INT);
-    uart_write("\n-------------------------------------");
-    uart_write("\n|      TEST FIRMWARE FLATFORM       |");
-    uart_write("\n|      Author : KienLTb             |");
-    uart_write("\n|      Version: 1.0                 |");
-    uart_write("\n-------------------------------------");
+        g_test_ok = FALSE;
+        uart_init(UART_BAUDRATE_115200, UART_ENABLE_INT);
+        uart_write("\n-------------------------------------");
+        uart_write("\n|      TEST FIRMWARE FLATFORM       |");
+        uart_write("\n|      Author : KienLTb             |");
+        uart_write("\n|      Version: 1.0                 |");
+        uart_write("\n-------------------------------------");
 
-    uart_write("\nSet clock: 16MHZ");
-    uart_irq_register_callback(get_confirm);
-    uart_write("\nPlease get_confirm (press 'y')...");
+        uart_write("\nSet clock: 16MHZ");
+        uart_irq_register_callback(get_confirm);
+        uart_write("\nPlease get_confirm (press 'y')...");
 
-    while (!g_test_ok);
+        while (!g_test_ok);
 
-    uart_write("\nuart hardware is ok");
+        uart_write("\nuart hardware is ok");
 }
 
 void get_confirm(void* parm)
 {
-    if (*(char*)parm == OK)
-        g_test_ok = TRUE;
+        if (*(char*)parm == OK)
+                g_test_ok = TRUE;
 }
 
 /*Test io*/
@@ -81,48 +81,48 @@ void button_press_cb(void* param);
 
 void gpio_test(void)
 {
-    uart_write("\nTesting io ...");
-    gpio_module_init(GPIO_PC_ENABLE | GPIO_PA_ENABLE);
-    gpio_init(LED_GREEN, GPIO_OUT);
-    gpio_init(LED_BLUE, GPIO_OUT);
+        uart_write("\nTesting io ...");
+        gpio_module_init(GPIO_PC_ENABLE | GPIO_PA_ENABLE);
+        gpio_init(LED_GREEN, GPIO_OUT);
+        gpio_init(LED_BLUE, GPIO_OUT);
 
-    g_test_ok = FALSE;
-    uart_write("\n    Turning on LED_GREEN...");
-    delay_ms(500);
-    gpio_set(LED_GREEN);
-    uart_write("\n    Please get_confirm (press 'y')...");
-    while (!g_test_ok);
+        g_test_ok = FALSE;
+        uart_write("\n    Turning on LED_GREEN...");
+        delay_ms(500);
+        gpio_set(LED_GREEN);
+        uart_write("\n    Please get_confirm (press 'y')...");
+        while (!g_test_ok);
 
-    g_test_ok = FALSE;
-    uart_write("\n    Turning on LED_BLUE...");
-    delay_ms(500);
-    gpio_set(LED_BLUE);
-    uart_write("\n    Please get_confirm (press 'y')...");
-    while (!g_test_ok);
+        g_test_ok = FALSE;
+        uart_write("\n    Turning on LED_BLUE...");
+        delay_ms(500);
+        gpio_set(LED_BLUE);
+        uart_write("\n    Please get_confirm (press 'y')...");
+        while (!g_test_ok);
 
-    g_test_ok = FALSE;
-    uart_write("\n    Registing button to toggle LED_GREEN ...");
-    gpio_init_irq(BUTTON, GPIO_FALLING);
-    gpio_irq_register_callback(button_press_cb);
-    delay_ms(500);
-    uart_write("\n    Please get_confirm (press 'y')...");
-    while (!g_test_ok);
+        g_test_ok = FALSE;
+        uart_write("\n    Registing button to toggle LED_GREEN ...");
+        gpio_init_irq(BUTTON, GPIO_FALLING);
+        gpio_irq_register_callback(button_press_cb);
+        delay_ms(500);
+        uart_write("\n    Please get_confirm (press 'y')...");
+        while (!g_test_ok);
 
-    uart_write("\n    io function is ok :D");
+        uart_write("\n    io function is ok :D");
 
 }
 
 void pulse_led(void* param)
 {
-    uint8_t LED = CAST_VAL(uint8_t,param);
-    gpio_toggle(LED);
+        uint8_t LED = CAST_VAL(uint8_t, param);
+        gpio_toggle(LED);
 }
 
 void button_press_cb(void* param)
 {
         /* Convert param to pin*/
-        uint8_t gpio = CAST_VAL(uint8_t,param);
-        if(gpio == BUTTON)
+        uint8_t gpio = CAST_VAL(uint8_t, param);
+        if (gpio == BUTTON)
                 gpio_toggle(LED_GREEN);
 }
 // /* PWM module testing - NOTE: only support 16MHZ*/
@@ -170,13 +170,13 @@ void button_press_cb(void* param)
 /* Timer testing */
 void timer_test()
 {
-    uart_write("\nTimer Service testing...");
+        uart_write("\nTimer Service testing...");
 
-    uart_write("\n    Create timer blink LED_GREEN 100ms...");
-    timer_create(MILI_TIMER_REPEAT, 100, pulse_led, &LED_GREEN);
+        uart_write("\n    Create timer blink LED_GREEN 100ms...");
+        timer_create(MILI_TIMER_REPEAT, 100, pulse_led, &LED_GREEN);
 
-    uart_write("\n    Create timer blink LED_BLUE 1s");
-    timer_create(SECOND_TIMER_REPEAT, 1, pulse_led, &LED_BLUE);
+        uart_write("\n    Create timer blink LED_BLUE 1s");
+        timer_create(SECOND_TIMER_REPEAT, 1, pulse_led, &LED_BLUE);
 
 }
 
