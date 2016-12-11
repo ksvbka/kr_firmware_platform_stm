@@ -122,10 +122,10 @@ debug: $(OUT).elf
 clean:
 	find ./ -name '*~' | xargs rm -f
 	rm -f *.o
-	rm -rf $(BIN_DIR)
+	rm -rf $(BUILD_DIR)
 
 distclean: clean
 	find ./ -name '*~' | xargs rm -f
 	rm -f *.o
-	rm -rf $(BIN_DIR)
+	rm -rf $(BUILD_DIR)
 	$(MAKE) -C $(STD_PERIPH_LIB) clean
