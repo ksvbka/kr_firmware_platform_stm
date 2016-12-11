@@ -45,11 +45,18 @@
 #define  GPIO_OUT_PD    4   /* Output with pull down register*/
 #define  GPIO_OUT_PU    5   /* Output with pull up register*/
 
+/* Edge interrupt */
+#define  GPIO_FALLING           0
+#define  GPIO_RISING            1
+#define  GPIO_RISING_FALLING    2
+
 void gpio_module_init(uint8_t port_enable); /*eg: PORT_A + PORT_C*/
 
 bool gpio_init(uint8_t pin, uint8_t mode);
 
 bool gpio_read(uint8_t pin);
+
+uint16_t gpio_read_port(uint8_t port);
 
 void gpio_set(uint8_t pin);
 
@@ -59,9 +66,12 @@ void gpio_toggle(uint8_t pin);
 
 void gpio_write(uint8_t pin, bool value);
 
-// bool gpio_init_irq(uint8_t pin, uint8_t edge);
+void gpio_write_port(uint8_t port, uint16_t port_value);
 
-// void gpio_irq_register_callback(callback fn_callback);
+bool gpio_init_irq(uint8_t pin, uint8_t edge);
 
+void gpio_irq_register_callback(callback fn_callback);
+
+void gpio_irq_handler(void);
 
 #endif //__GPIO_H__

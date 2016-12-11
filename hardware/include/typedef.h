@@ -6,10 +6,10 @@ typedef void (*callback) (void* param);
 #define ARRAY_LENGTH(array) (sizeof((array))/sizeof((array)[0]))
 
 /* Cat void* to ptr type* */
-#define CAST_PTR(ptr, type) ((type* )ptr)
+#define CAST_PTR(type, ptr) ((type* )ptr)
 
 /* Cat void* to value of pointer type*/
-#define CAST_VAL(ptr, type) (* ((type* )ptr))
+#define CAST_VAL(type, ptr) (* ((type* )ptr))
 
 typedef unsigned char  bool;
 

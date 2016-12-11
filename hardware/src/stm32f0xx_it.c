@@ -30,6 +30,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
 #include "system.h"
+#include "gpio.h"
+#include "uart.h"
 
 /** @addtogroup STM32F0-Discovery_Demo
   * @{
@@ -121,7 +123,18 @@ void SysTick_Handler(void)
 /**
   * @}
   */
+void EXTI0_1_IRQHandler(void)
+{
+  gpio_irq_handler();
+}
 
+void USART1_IRQHandler(void) {
+  uart_irq_handler();
+}
+
+void USART2_IRQHandler(void) {
+  uart_irq_handler();
+}
 /**
   * @}
   */
