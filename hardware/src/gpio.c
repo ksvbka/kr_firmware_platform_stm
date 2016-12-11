@@ -95,7 +95,7 @@ void gpio_write_port(uint8_t port, uint16_t port_value)
 bool gpio_init_irq(uint8_t pin, uint8_t edge)
 {
         /* Config gpio as input*/
-        if (USE_INTERNAL_RES == 0)
+        if (USE_INTERNAL_RES == TRUE)
                 /* Use internal pullup*/
                 gpio_init(pin, GPIO_IN_PU);
         else

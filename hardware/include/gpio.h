@@ -14,7 +14,7 @@
  */
 
 /* Define option use register pull up/down as internal (0) or external (1)*/
-#define USE_INTERNAL_RES 1
+#define USE_INTERNAL_RES FALSE
 
 /* Define port of GPIO - RCC_AHBPeriph_GPIOx (x = A,B,C,D,F)*/
 #define GPIO_PA 1
