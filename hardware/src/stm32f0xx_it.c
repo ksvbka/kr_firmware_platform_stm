@@ -69,10 +69,9 @@ void NMI_Handler(void)
   */
 void HardFault_Handler(void)
 {
-  /* Go to infinite loop when Hard Fault exception occurs */
-  while (1)
-  {
-  }
+    /* Go to infinite loop when Hard Fault exception occurs */
+    while (1) {
+    }
 }
 
 /**
@@ -100,8 +99,8 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-  /*Kr*/
-  update_tick_count();
+    /*Kr*/
+    update_tick_count();
 }
 
 /******************************************************************************/
@@ -125,15 +124,27 @@ void SysTick_Handler(void)
   */
 void EXTI0_1_IRQHandler(void)
 {
-  gpio_irq_handler();
+    gpio_irq_handler();
 }
 
-void USART1_IRQHandler(void) {
-  uart_irq_handler();
+
+void EXTI2_3_IRQHandler(void)
+{
+    gpio_irq_handler();
+}
+void EXTI4_15_IRQHandler(void)
+{
+    gpio_irq_handler();
 }
 
-void USART2_IRQHandler(void) {
-  uart_irq_handler();
+void USART1_IRQHandler(void)
+{
+    uart_irq_handler();
+}
+
+void USART2_IRQHandler(void)
+{
+    uart_irq_handler();
 }
 /**
   * @}

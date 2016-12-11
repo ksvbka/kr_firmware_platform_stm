@@ -22,14 +22,14 @@
 #define UART_DISABLE_INT     0
 
 typedef enum {
-    UART_BAUDRATE_9600 = 0,
-    UART_BAUDRATE_19200,
-    UART_BAUDRATE_38400,
-    UART_BAUDRATE_56000,
-    UART_BAUDRATE_115200,
-    UART_BAUDRATE_128000,
-    UART_BAUDRATE_256000
-}baudrate_t;
+        UART_BAUDRATE_9600 = 0,
+        UART_BAUDRATE_19200,
+        UART_BAUDRATE_38400,
+        UART_BAUDRATE_56000,
+        UART_BAUDRATE_115200,
+        UART_BAUDRATE_128000,
+        UART_BAUDRATE_256000
+} baudrate_t;
 
 void uart_init(baudrate_t baudrate, bool enable_interrupt);
 
