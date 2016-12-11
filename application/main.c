@@ -17,7 +17,10 @@ void pulse_led_3(void* param)
 
 void pulse_led_4(void* param)
 {
-        gpio_toggle(led_4);
+        /* Convert param to pin*/
+        uint8_t gpio = CAST_VAL(uint8_t,param);
+        if(gpio == button)
+                gpio_toggle(led_4);
 }
 
 void print_data(void* param)
@@ -31,10 +34,9 @@ void print_data(void* param)
 
 int main(void)
 {
-
         system_init(CLOCK_SOURCE_HSI);
 
-        gpio_module_init(GPIO_PC_ENABLE);
+        gpio_module_init(GPIO_PC_ENABLE | GPIO_PA_ENABLE);
         gpio_init(led_3, GPIO_OUT);
         gpio_init(led_4, GPIO_OUT);
 

@@ -127,7 +127,6 @@ void EXTI0_1_IRQHandler(void)
     gpio_irq_handler();
 }
 
-
 void EXTI2_3_IRQHandler(void)
 {
     gpio_irq_handler();

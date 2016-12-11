@@ -105,10 +105,11 @@ bool gpio_init_irq(uint8_t pin, uint8_t edge)
         uint8_t pin_soure   = get_pin_source(pin);
         SYSCFG_EXTILineConfig(port_source, pin_soure);
 
-        /* Configure EXTI0 line */
+        /* Configure EXTIx line (x = 0: 15)*/
         EXTI_InitTypeDef   EXTI_InitStructure;
 
-        EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+        // EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+        EXTI_InitStructure.EXTI_Line = (uint32_t)GET_PIN(pin);
         EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
         EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 
@@ -121,10 +122,14 @@ bool gpio_init_irq(uint8_t pin, uint8_t edge)
 
         EXTI_Init(&EXTI_InitStructure);
 
-        /* Enable and set EXTI0 Interrupt */
+        /* Enable and set EXTIx Interrupt */
         NVIC_InitTypeDef   NVIC_InitStructure;
-
-        NVIC_InitStructure.NVIC_IRQChannel = EXTI0_1_IRQn;
+        if ((pin & 0x1F) <= 1)
+                NVIC_InitStructure.NVIC_IRQChannel = EXTI0_1_IRQn;
+        else if ((pin & 0x1F) <= 3)
+                NVIC_InitStructure.NVIC_IRQChannel = EXTI2_3_IRQn;
+        else
+                NVIC_InitStructure.NVIC_IRQChannel = EXTI4_15_IRQn;
         NVIC_InitStructure.NVIC_IRQChannelPriority = 0x00;
         NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
         NVIC_Init(&NVIC_InitStructure);
@@ -138,13 +143,80 @@ void gpio_irq_register_callback(callback fn_callback)
         g_gpio_irq_callback = fn_callback;
 }
 
-void gpio_irq_handler()
+/* PLEASE FIX ME! ONLY SUCCESS ON GPIO PA0! */
+void gpio_irq_handler(void)
 {
+        /* Determine which line have interrupt*/
+        uint8_t gpio_irq;
+        uint8_t line_irq;
         if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
-                g_gpio_irq_callback(NULL);
+                line_irq = 0;
                 /* Clear the EXTI line 0 pending bit */
                 EXTI_ClearITPendingBit(EXTI_Line0);
+        } else if (EXTI_GetITStatus(EXTI_Line1) != RESET) {
+                line_irq = 1;
+                /* Clear the EXTI line 1 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line1);
+        } else if (EXTI_GetITStatus(EXTI_Line2) != RESET) {
+                line_irq = 2;
+                /* Clear the EXTI line 2 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line2);
+        } else if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
+                line_irq = 3;
+                /* Clear the EXTI line 3 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line3);
+        } else if (EXTI_GetITStatus(EXTI_Line4) != RESET) {
+                line_irq = 4;
+                /* Clear the EXTI line 4 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line4);
+        } else if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
+                line_irq = 5;
+                /* Clear the EXTI line 5 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line5);
+        } else if (EXTI_GetITStatus(EXTI_Line6) != RESET) {
+                line_irq = 6;
+                /* Clear the EXTI line 6 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line6);
+        } else if (EXTI_GetITStatus(EXTI_Line7) != RESET) {
+                line_irq = 7;
+                /* Clear the EXTI line 7 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line7);
+        } else if (EXTI_GetITStatus(EXTI_Line8) != RESET) {
+                line_irq = 8;
+                /* Clear the EXTI line 8 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line8);
+        } else if (EXTI_GetITStatus(EXTI_Line9) != RESET) {
+                line_irq = 9;
+                /* Clear the EXTI line 9 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line9);
+        } else if (EXTI_GetITStatus(EXTI_Line10) != RESET) {
+                line_irq = 10;
+                /* Clear the EXTI line 10 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line10);
+        } else if (EXTI_GetITStatus(EXTI_Line11) != RESET) {
+                line_irq = 11;
+                /* Clear the EXTI line 11 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line11);
+        } else if (EXTI_GetITStatus(EXTI_Line12) != RESET) {
+                line_irq = 12;
+                /* Clear the EXTI line 12 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line12);
+        } else if (EXTI_GetITStatus(EXTI_Line13) != RESET) {
+                line_irq = 13;
+                /* Clear the EXTI line 13 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line13);
+        } else if (EXTI_GetITStatus(EXTI_Line14) != RESET) {
+                line_irq = 14;
+                /* Clear the EXTI line 14 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line14);
+        } else if (EXTI_GetITStatus(EXTI_Line15) != RESET) {
+                line_irq = 15;
+                /* Clear the EXTI line 15 pending bit */
+                EXTI_ClearITPendingBit(EXTI_Line15);
         }
+        gpio_irq = GPIO_PIN(GPIO_Px_IRQ, line_irq);
+        g_gpio_irq_callback(&gpio_irq);
+
 }
 
 /* Implement Helper function */

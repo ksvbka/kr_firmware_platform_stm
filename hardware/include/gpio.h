@@ -50,6 +50,9 @@
 #define  GPIO_RISING            1
 #define  GPIO_RISING_FALLING    2
 
+/* User GPIO_PA [pin0 : pin15] for extern irq (except PA9 PA10 for uart)*/
+#define GPIO_Px_IRQ             GPIO_PA
+
 void gpio_module_init(uint8_t port_enable); /*eg: PORT_A + PORT_C*/
 
 bool gpio_init(uint8_t pin, uint8_t mode);
