@@ -34,6 +34,8 @@ libraries/*.a
 *.map
 
 build/
+bin/
+obj/
 # Debug files
 *.dSYM/
 *.su
