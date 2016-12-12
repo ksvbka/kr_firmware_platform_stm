@@ -22,7 +22,7 @@
 
 /*Service*/
 #include "timer.h"
-// #include "event.h"
+#include "event.h"
 
 void platform_test_case(void);
 
@@ -37,9 +37,9 @@ void gpio_test(void);
 // void lcd_5110(void);
 /* Test case for Service*/
 void timer_test(void);
-// void event_cb(void* param);
-// void handle_event_queue(void);
-// void event_test(void);
+void event_cb(void* param);
+void handle_event_queue(void);
+void event_test(void);
 
 /* Test i2c and external sensor*/
 // void mpu6050_test(void);

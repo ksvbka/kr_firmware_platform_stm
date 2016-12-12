@@ -19,7 +19,7 @@ void platform_test_case(void)
 
         // /*Service testing*/
         timer_test();
-        // event_test();
+        event_test();
         // pwm_test();
         // adc_test();
         // // mpu6050_test();
@@ -27,7 +27,7 @@ void platform_test_case(void)
         // /* Supper loop*/
         while (1) {
                 handle_timer_events();
-                // handle_event_queue();
+                handle_event_queue();
         }
         // pwm_test_dimming_led();
 
@@ -71,9 +71,9 @@ void get_confirm(void* parm)
 
 #define PRESS_BUTTON (10) // press button event
 
-uint8_t LED_GREEN   = GPIO_PIN(GPIO_PC, 9);
+uint8_t LED_GREEN  = GPIO_PIN(GPIO_PC, 9);
 uint8_t LED_BLUE   = GPIO_PIN(GPIO_PC, 8);
-uint8_t BUTTON  = GPIO_PIN(GPIO_PA, 0);
+uint8_t BUTTON     = GPIO_PIN(GPIO_PA, 0);
 
 void pulse_led(void* param);
 
@@ -180,41 +180,42 @@ void timer_test()
 
 }
 
-// /* Event testing */
-// void event_test()
-// {
-//     uart_write("\nEvent Service testing...");
-//     uart_write("\n    Press button to delete timer....");
-//     gpio_init_irq(BUTTON, GPIO_FALLING);
-//     gpio_irq_register_callback(event_cb);
+/* Event testing */
+void event_test()
+{
+        uart_write("\nEvent Service testing...");
+        uart_write("\n    Press button to delete timer....");
+        gpio_init_irq(BUTTON, GPIO_FALLING);
+        gpio_irq_register_callback(event_cb);
 
-// }
+}
 
-// /* Create and bind and event to g_event*/
-// void event_cb(void* param)
-// {
-//     if (p_io_event_t(param)->mask & GPIO_MASK(BUTTON)) {
-//         event_t press_button = {PRESS_BUTTON, LED_GREEN};
-//         bind_event(&press_button);
-//     }
-// }
+/* Create and bind and event to g_event*/
+void event_cb(void* param)
+{
+        uint8_t gpio_irq = CAST_VAL(uint8_t, param);
+        if (gpio_irq == BUTTON) {
+                event_t press_button = {PRESS_BUTTON, LED_GREEN};
+                bind_event(&press_button);
+        }
+}
 
 
-// void handle_event_queue()
-// {
-//     event_t event;
-//     while (poll_event(&event) != 0) {
-//         switch (event.type) {
-//         case PRESS_BUTTON:
-//             timer_delete(pulse_led);
-//             timer_delete(pulse_led);
-//             gpio_clear(LED_GREEN);
-//             gpio_clear(LED_BLUE);
-//             break;
-//         }
-//     }
-//     delay_ms(500);
-// }
+void handle_event_queue()
+{
+        event_t event;
+        while (poll_event(&event) != 0) {
+                switch (event.type) {
+                case PRESS_BUTTON:
+                        timer_delete(pulse_led);
+                        timer_delete(pulse_led);
+                        gpio_clear(LED_GREEN);
+                        gpio_clear(LED_BLUE);
+                        break;
+                }
+        }
+        delay_ms(500);
+}
 
 /*
     Test external sensor
