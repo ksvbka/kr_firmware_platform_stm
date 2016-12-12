@@ -13,7 +13,6 @@ static GPIO_TypeDef* get_gpio_port(uint8_t gpio); /* get GPIO_TypeDef* from gpio
 static uint8_t get_pin_source(uint8_t gpio);      /* get pin_soure for setup interrupt*/
 static uint8_t get_exti_port_source(uint8_t gpio); /*Get port source for setup interrupt*/
 
-
 void gpio_module_init(uint8_t port_enable)
 {
         if (port_enable & GPIO_PA_ENABLE)
@@ -97,7 +96,6 @@ void gpio_write_port(uint8_t port, uint16_t port_value)
         GPIO_TypeDef* GPIOx = get_port(port);
         return GPIO_Write(GPIOx, port_value);
 }
-
 
 bool gpio_init_irq(uint8_t pin, uint8_t edge)
 {

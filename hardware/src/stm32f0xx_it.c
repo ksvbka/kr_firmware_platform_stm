@@ -100,7 +100,7 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
     /*Kr*/
-    update_tick_count();
+    sys_tick_irq_handler();
 }
 
 /******************************************************************************/

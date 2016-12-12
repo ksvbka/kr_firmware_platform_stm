@@ -27,8 +27,9 @@
 #define GPIO_PD 4
 #define GPIO_PF 5
 
-/* Define option use register pull up/down as internal (0) or external (1)*/
+/* Define option use register pull up/down as internal (TRUE) or external (FALSE)*/
 #define USE_INTERNAL_RES        FALSE
+
 /* Define Port user for irq, default is GPIO_PA => PAx (x = 0:15) can config as gpio irq*/
 #define GPIO_Px_IRQ     GPIO_PA
 
@@ -39,7 +40,6 @@
 #define GPIO_PD_ENABLE (GPIO_PD << 3)
 #define GPIO_PF_ENABLE (GPIO_PF << 4)
 
-
 #define PORT_OFFSET 5 /*bit*/
 
 #define GPIO_MASK(pin) ((uint16_t)(1 << (pin)))
@@ -47,7 +47,6 @@
 #define GPIO_PIN(port, pin)  ((uint8_t)( (port << PORT_OFFSET) | pin ))
 #define GET_PORT(gpio)  ((uint8_t)(gpio >> PORT_OFFSET))
 #define GET_PIN(gpio)  (GPIO_MASK(gpio & 0x1F))
-
 
 /* GPIO mode */
 #define  GPIO_IN        0   /* Input*/

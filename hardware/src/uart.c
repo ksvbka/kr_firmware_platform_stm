@@ -15,7 +15,7 @@
  *      TX_PIN GPIO_Pin_2
  *      RX_PIN GPIO_Pin_3
  *
- *  Note: Only use module USART1 on stm32f030
+ *  Note: stm32f030 only have USART1 module
  */
 
 #define TX_PIN (GPIO_Pin_9)
@@ -26,14 +26,14 @@
         #define RX_SOURCE               (GPIO_PinSource10)
         #define USARTx                  (USART1)
         #define RCC_APB2Periph_USARTx   (RCC_APB2Periph_USART1)
-#define USARTx_IRQn             (USART1_IRQn)
+        #define USARTx_IRQn             (USART1_IRQn)
 
 // #else /*Use UART2 module*/
-// #define TX_SOURCE               (GPIO_PinSource2)
-// #define RX_SOURCE               (GPIO_PinSource3)
-// #define USARTx                  (USART2)
-// #define RCC_APB2Periph_USARTx   (RCC_APB2Periph_USART2)
-// #define USARTx_IRQn             (USART2_IRQn)
+//      #define TX_SOURCE               (GPIO_PinSource2)
+//      #define RX_SOURCE               (GPIO_PinSource3)
+//      #define USARTx                  (USART2)
+//      #define RCC_APB2Periph_USARTx   (RCC_APB2Periph_USART2)
+//      #define USARTx_IRQn             (USART2_IRQn)
 #endif
 
 
@@ -56,7 +56,7 @@ void uart_init(baudrate_t baudrate, bool enable_interrupt)
         GPIO_InitStructure.GPIO_Pin = TX_PIN | RX_PIN;
         GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
         GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF; /* alternate mode*/
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -87,6 +87,7 @@ void uart_putc(char c)
         // Transmit data by writing to TDR, clears TXE flag
         USARTx->TDR = c;
 }
+
 void uart_write(const char *data_buffer)
 {
         while (*data_buffer != '\0') {
@@ -103,7 +104,7 @@ void uart_irq_register_callback(callback fnCallback)
         g_uart_callback = fnCallback;
 }
 
-/* TODO: Need to check*/
+/*  Function handles uart irq, will be called in USART1_IRQHandler() implement in stm32f0xx_it.c*/
 void uart_irq_handler(void)
 {
         if (USART_GetITStatus(USARTx, USART_IT_RXNE)) {

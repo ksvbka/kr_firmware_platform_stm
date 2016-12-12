@@ -13,8 +13,6 @@
                                    /* the PLL, and the PLL is used as system clock source*/
 void system_init(uint8_t clock_source);
 
-void update_tick_count();
-
 uint32_t get_tick_count();
 
 uint32_t get_second_count();

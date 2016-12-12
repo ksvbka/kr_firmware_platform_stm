@@ -33,7 +33,9 @@ void system_init(uint8_t clock_source) {
 	g_second_count = 0;
 }
 
-void update_tick_count() {
+
+/*  Function handles SysTick Handler, will be called in SysTick_Handler() implement in stm32f0xx_it.c*/
+void sys_tick_irq_handler() {
 	g_tick_count++;
 	g_count++;
 	if(g_count == 1000) {
