@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-30 21:32:06
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-12 00:06:44
+* @Last Modified time: 2016-12-15 21:46:08
 */
 
 #ifndef __PLATFORM_TEST_CASE__H__
@@ -14,7 +14,7 @@
 #include "uart.h"
 // #include "i2c_hw.h"
 // #include "adc.h"
-// #include "pwm.h"
+#include "pwm.h"
 // #include "lcd_5110.h"
 // #include "flash.h"
 // #include "comparator.h"
@@ -32,7 +32,7 @@ void uart_test(void);
 void get_confirm(void* param);
 void gpio_test(void);
 // void pwm_test(void);
-// void pwm_test_dimming_led(void);
+void pwm_test_dimming_led(void);
 // void adc_test(void); // Meansure value of PWM output
 // void lcd_5110(void);
 /* Test case for Service*/

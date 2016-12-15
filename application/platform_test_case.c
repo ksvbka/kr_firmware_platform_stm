@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-30 22:30:36
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-12 00:29:56
+* @Last Modified time: 2016-12-15 22:18:17
 */
 
 #include "platform_test_case.h"
@@ -24,7 +24,7 @@ void platform_test_case(void)
         // adc_test();
         // // mpu6050_test();
 
-        // /* Supper loop*/
+        /* Supper loop*/
         while (1) {
                 handle_timer_events();
                 handle_event_queue();
@@ -265,34 +265,24 @@ void handle_event_queue()
  */
 // void pwm_test_dimming_led(void)
 // {
-//     system_init(FREQUENCY_16MHZ);
-//     uart_init(UART_BAUDRATE_115200, UART_ENABLE_INT);
+//     // system_init(FREQUENCY_16MHZ);
+//     // uart_init(UART_BAUDRATE_115200, UART_ENABLE_INT);
 
-//     uint8_t channel_1 = GPIO_PIN(2, 1);
-//     uint8_t channel_2 = GPIO_PIN(2, 4);
-//     uint8_t duty_cycle = 0;
+//     // uint8_t channel_1 = GPIO_PIN(2, 1);
+//     // uint8_t channel_2 = GPIO_PIN(2, 4);
+//     uint16_t duty_cycle = 0;
 
 //     uart_write("\nTesting PWM by dimming led...");
-//     pwm_init(FREQUENCY_2KHZ, channel_1, channel_2);
+//     pwm_init(PWM_CHANNEL_1 + PWM_CHANNEL_4, 100000);
 
 //     while (1) {
-//         pwm_set_duty(CHANNEL_1, duty_cycle);
-//         pwm_set_duty(CHANNEL_2, 100 - duty_cycle);
-//         duty_cycle += 2;
-//         if (duty_cycle >= 100)
+//         // uart_write("\n set duty_cycle");
+//         pwm_set_duty(PWM_CHANNEL_1, duty_cycle);
+//         pwm_set_duty(PWM_CHANNEL_4, 1000 - duty_cycle);
+//         duty_cycle += 20;
+//         if (duty_cycle >= 1000)
 //             duty_cycle = 0;
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
-//         delay_ms(500);
+//         delay_ms(50);
 //     }
 // }
 
