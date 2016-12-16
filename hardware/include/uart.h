@@ -11,8 +11,8 @@
 
 /**
  *  USART1:
- *      TX_PIN GPIO_Pin_9
- *      RX_PIN GPIO_Pin_10
+ *      TX_PIN GPIOA_9  or GPIOB_6
+ *      RX_PIN GPIOA_10 or GPIOB_7
  *  USART2:
  *      TX_PIN GPIO_Pin_2
  *      RX_PIN GPIO_Pin_3
@@ -21,8 +21,13 @@
  */
 
 /* Define module you want to use, UART1 or UART2*/
-#define USE_UART1_MODULE 1
-// #define UART_UART2_MODULE 1
+#define USE_UART1_MODULE        1
+// #define UART_UART2_MODULE    1
+
+/* Define GPIO pin used for UART module*/
+#define USE_UART_PIN_B6_B7              1
+// #define USE_UART_PIN_A9_A10          1
+
 
 #define UART_ENABLE_INT      1
 #define UART_DISABLE_INT     0
