@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-11 20:12:21
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-11 23:31:16
+* @Last Modified time: 2016-12-16 22:17:59
 */
 #ifndef __UART_H__
 #define __UART_H__
@@ -23,11 +23,6 @@
 /* Define module you want to use, UART1 or UART2*/
 #define USE_UART1_MODULE        1
 // #define UART_UART2_MODULE    1
-
-/* Define GPIO pin used for UART module*/
-#define USE_UART_PIN_B6_B7              1
-// #define USE_UART_PIN_A9_A10          1
-
 
 #define UART_ENABLE_INT      1
 #define UART_DISABLE_INT     0
