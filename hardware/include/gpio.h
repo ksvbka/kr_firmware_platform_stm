@@ -65,8 +65,8 @@
 #define AF7     ((uint8_t)0x07)
 
 /* Output mode */
-#define PUSH_PULL  GPIO_OType_PP
-#define OPEN_DRAIN GPIO_OType_OD
+#define PUSH_PULL       GPIO_OType_PP
+#define OPEN_DRAIN      GPIO_OType_OD
 
 /* Push pull mode */
 #define NO_PULL         GPIO_PuPd_NOPULL
