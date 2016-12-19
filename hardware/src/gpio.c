@@ -13,6 +13,14 @@ static GPIO_TypeDef* get_gpio_port(uint8_t gpio); /* get GPIO_TypeDef* from gpio
 static uint8_t get_pin_source(uint8_t gpio);      /* get pin_soure for setup interrupt*/
 static uint8_t get_exti_port_source(uint8_t gpio); /*Get port source for setup interrupt*/
 
+
+/* Define option for enable module GPIOx (x = A,B,C,D,F)*/
+#define GPIO_PA_ENABLE (1 << GPIO_PA)
+#define GPIO_PB_ENABLE (1 << GPIO_PB)
+#define GPIO_PC_ENABLE (1 << GPIO_PC)
+#define GPIO_PD_ENABLE (1 << GPIO_PD)
+#define GPIO_PF_ENABLE (1 << GPIO_PF)
+
 void gpio_module_init(uint8_t port_enable)
 {
         if (port_enable & GPIO_PA_ENABLE)
@@ -29,6 +37,11 @@ void gpio_module_init(uint8_t port_enable)
 
 bool gpio_init(uint8_t pin, uint8_t mode)
 {
+        /* Enable Clock source */
+        uint8_t port = GET_PORT(pin);
+        gpio_module_init(1 << port);
+
+        /* Setup gpio pin*/
         GPIO_InitTypeDef  GPIO_InitStructure;
 
         GPIO_InitStructure.GPIO_Pin   = GET_PIN(pin);       /* Setup pin*/
@@ -54,6 +67,30 @@ bool gpio_init(uint8_t pin, uint8_t mode)
 
         return 1;
 }
+
+bool gpio_init_function(uint8_t pin, uint8_t AF_number, uint8_t output_type, \
+                        uint8_t res_pull_type)
+{
+        /* Enable Clock source */
+        uint8_t port = GET_PORT(pin);
+        gpio_module_init(1 << port);
+
+        /* Setup gpio pin*/
+        GPIO_TypeDef* GPIOx = get_gpio_port(pin);
+
+        GPIO_InitTypeDef  GPIO_InitStructure;
+        GPIO_InitStructure.GPIO_Pin   = GET_PIN(pin);       /* Setup pin*/
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;   /* Default 50MHz*/
+        GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+        GPIO_InitStructure.GPIO_OType = output_type;
+        GPIO_InitStructure.GPIO_PuPd  = res_pull_type; /*GPIO_PuPd_NOPULL, GPIO_PuPd_UP, GPIO_PuPd_DOWN*/
+        GPIO_Init(GPIOx, &GPIO_InitStructure);
+
+        GPIO_PinAFConfig(GPIOx, get_pin_source(pin), AF_number);
+
+        return 1;
+}
+
 
 bool gpio_read(uint8_t pin)
 {

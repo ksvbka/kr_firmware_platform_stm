@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-11 23:28:56
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-11 23:31:03
+* @Last Modified time: 2016-12-17 08:07:12
 */
 
 #ifndef __GPIO_H__
@@ -33,20 +33,13 @@
 /* Define Port user for irq, default is GPIO_PA => PAx (x = 0:15) can config as gpio irq*/
 #define GPIO_Px_IRQ     GPIO_PA
 
-/* Define option for enable module GPIOx (x = A,B,C,D,F)*/
-#define GPIO_PA_ENABLE (GPIO_PA << 0)
-#define GPIO_PB_ENABLE (GPIO_PB << 1)
-#define GPIO_PC_ENABLE (GPIO_PC << 2)
-#define GPIO_PD_ENABLE (GPIO_PD << 3)
-#define GPIO_PF_ENABLE (GPIO_PF << 4)
-
 #define PORT_OFFSET 5 /*bit*/
 
-#define GPIO_MASK(pin) ((uint16_t)(1 << (pin)))
+#define GPIO_MASK(pin)          ((uint16_t)(1 << (pin)))
+#define GPIO_PIN(port, pin)     ((uint8_t)( (port << PORT_OFFSET) | pin ))
 
-#define GPIO_PIN(port, pin)  ((uint8_t)( (port << PORT_OFFSET) | pin ))
-#define GET_PORT(gpio)  ((uint8_t)(gpio >> PORT_OFFSET))
-#define GET_PIN(gpio)  (GPIO_MASK(gpio & 0x1F))
+#define GET_PORT(gpio)          ((uint8_t)(gpio >> PORT_OFFSET))
+#define GET_PIN(gpio)           (GPIO_MASK(gpio & 0x1F))
 
 /* GPIO mode */
 #define  GPIO_IN        0   /* Input*/
@@ -61,9 +54,29 @@
 #define  GPIO_RISING            1
 #define  GPIO_RISING_FALLING    2
 
-void gpio_module_init(uint8_t port_enable); /*eg: PORT_A + PORT_C*/
+/* AF number */
+#define AF0     ((uint8_t)0x00)
+#define AF1     ((uint8_t)0x01)
+#define AF2     ((uint8_t)0x02)
+#define AF3     ((uint8_t)0x03)
+#define AF4     ((uint8_t)0x04)
+#define AF5     ((uint8_t)0x05)
+#define AF6     ((uint8_t)0x06)
+#define AF7     ((uint8_t)0x07)
+
+/* Output mode */
+#define PUSH_PULL  GPIO_OType_PP
+#define OPEN_DRAIN GPIO_OType_OD
+
+/* Push pull mode */
+#define NO_PULL         GPIO_PuPd_NOPULL
+#define PULL_UP         GPIO_PuPd_UP
+#define PULL_DOWN       GPIO_PuPd_DOWN
 
 bool gpio_init(uint8_t pin, uint8_t mode);
+
+bool gpio_init_function(uint8_t pin, uint8_t AF_number, uint8_t output_type, \
+                        uint8_t res_pull_type);
 
 bool gpio_read(uint8_t pin);
 
