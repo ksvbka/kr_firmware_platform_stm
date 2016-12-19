@@ -27,9 +27,6 @@
     | ( ((uint16_t)( ((uint8_t *)(buf))[ 1 ] ) ) & 0xFF )       \
     )
 
-/* Convert Integer to String*/
-char* to_string(int i);
-
 /* Convert String to Integer*/
 int to_int(char *s);
 

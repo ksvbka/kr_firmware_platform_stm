@@ -11,36 +11,6 @@
 
 static char buf[10];
 
-/* Convert Integer to String*/
-char* to_string(int i)
-{
-        char sign = '+';
-        short len = 0;
-        char *p = buf;
-        char* pbuf = buf;
-        if (i < 0) {
-                sign = '-';
-                i = -i;
-        }
-        do {
-                *pbuf++ = (i % 10) + '0';
-                len++;
-                i /= 10;
-        } while (i != 0);
-
-        if (sign == '-') {
-                *pbuf++ = '-';
-                len++;
-        }
-        for (i = 0; i < len / 2; i++) {
-                p[len] = p[i];
-                p[i] = p[len - 1 - i];
-                p[len - 1 - i] = p[len];
-        }
-        p[len] = 0;
-        return buf;
-}
-
 /* Convert String to Integer*/
 int to_int(char *s)
 {
