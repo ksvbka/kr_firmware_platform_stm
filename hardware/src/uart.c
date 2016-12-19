@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-11 20:13:34
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-11 23:31:34
+* @Last Modified time: 2016-12-19 20:51:32
 */
 
 #include "stm32f0xx.h"
@@ -19,27 +19,6 @@
  *
  *  Note: stm32f030 only have USART1 module
  */
-
-#ifdef USE_UART1_MODULE
-#define USARTx                  (USART1)
-#define RCC_APB2Periph_USARTx   (RCC_APB2Periph_USART1)
-#define USARTx_IRQn             (USART1_IRQn)
-// #else /*Use UART2 module*/
-//      #define USARTx                  (USART2)
-//      #define RCC_APB2Periph_USARTx   (RCC_APB2Periph_USART2)
-//      #define USARTx_IRQn             (USART2_IRQn)
-#endif
-
-/* Define USART1 pin*/
-/* Option 1: GPIOB_6 GPIOB_7*/
-#define TX_PIN          GPIO_PIN(GPIO_PB, 6)
-#define RX_PIN          GPIO_PIN(GPIO_PB, 7)
-#define UART_FUNCTION   AF0
-
-/* Option 2: GPIOA_9 GPIOA_10*/
-// #define TX_PIN          GPIO_PIN(GPIO_PA, 9)
-// #define RX_PIN          GPIO_PIN(GPIO_PA, 10)
-// #define UART_FUNCTION   AF1
 
 /* Global callback function variable*/
 static callback g_uart_callback =  NULL;
