@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-30 22:30:36
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-15 22:18:17
+* @Last Modified time: 2016-12-16 21:15:18
 */
 
 #include "platform_test_case.h"
@@ -17,11 +17,12 @@ void platform_test_case(void)
         uart_test();
         gpio_test();
 
-        // /*Service testing*/
+        // // /*Service testing*/
         timer_test();
         event_test();
         // pwm_test();
         // adc_test();
+        // i2c_test();
         // // mpu6050_test();
 
         /* Supper loop*/
@@ -46,19 +47,21 @@ void uart_test(void)
 {
         g_test_ok = FALSE;
         uart_init(UART_BAUDRATE_115200, UART_ENABLE_INT);
-        uart_write("\n-------------------------------------");
-        uart_write("\n|      TEST FIRMWARE FLATFORM       |");
-        uart_write("\n|      Author : KienLTb             |");
-        uart_write("\n|      Version: 1.0                 |");
-        uart_write("\n-------------------------------------");
+        uart_printf("\n-------------------------------------");
+        uart_printf("\n|      TEST FIRMWARE FLATFORM       |");
+        uart_printf("\n|      Author : KienLTb             |");
+        uart_printf("\n|      Version: 1.0                 |");
+        uart_printf("\n-------------------------------------");
 
-        uart_write("\nSet clock: 16MHZ");
+        uart_printf("\nSet clock: 16MHZ");
+        uart_printf("\nTest put number: ");
+        uart_printf("Test wirte number: %d \t %f \t %s", -161311, 3.14, "write number ok");
         uart_irq_register_callback(get_confirm);
-        uart_write("\nPlease get_confirm (press 'y')...");
+        // uart_printf("\nPlease get_confirm (press 'y')...");
 
-        while (!g_test_ok);
+        // while (!g_test_ok);
 
-        uart_write("\nuart hardware is ok");
+        // uart_printf("\nuart hardware is ok");
 }
 
 void get_confirm(void* parm)
@@ -81,34 +84,34 @@ void button_press_cb(void* param);
 
 void gpio_test(void)
 {
-        uart_write("\nTesting io ...");
-        gpio_module_init(GPIO_PC_ENABLE | GPIO_PA_ENABLE);
+        uart_printf("\nTesting io ...");
+        // gpio_module_init(GPIO_PC_ENABLE | GPIO_PA_ENABLE);
         gpio_init(LED_GREEN, GPIO_OUT);
         gpio_init(LED_BLUE, GPIO_OUT);
 
         g_test_ok = FALSE;
-        uart_write("\n    Turning on LED_GREEN...");
+        uart_printf("\n    Turning on LED_GREEN...");
         delay_ms(500);
         gpio_set(LED_GREEN);
-        uart_write("\n    Please get_confirm (press 'y')...");
+        uart_printf("\n    Please get_confirm (press 'y')...");
         while (!g_test_ok);
 
         g_test_ok = FALSE;
-        uart_write("\n    Turning on LED_BLUE...");
+        uart_printf("\n    Turning on LED_BLUE...");
         delay_ms(500);
         gpio_set(LED_BLUE);
-        uart_write("\n    Please get_confirm (press 'y')...");
+        uart_printf("\n    Please get_confirm (press 'y')...");
         while (!g_test_ok);
 
         g_test_ok = FALSE;
-        uart_write("\n    Registing button to toggle LED_GREEN ...");
+        uart_printf("\n    Registing button to toggle LED_GREEN ...");
         gpio_init_irq(BUTTON, GPIO_FALLING);
         gpio_irq_register_callback(button_press_cb);
         delay_ms(500);
-        uart_write("\n    Please get_confirm (press 'y')...");
+        uart_printf("\n    Please get_confirm (press 'y')...");
         while (!g_test_ok);
 
-        uart_write("\n    io function is ok :D");
+        uart_printf("\n    io function is ok :D");
 
 }
 
@@ -130,13 +133,13 @@ void button_press_cb(void* param)
 // {
 //     uint8_t channel_1 = GPIO_PIN(2, 1);
 //     uint8_t channel_2 = GPIO_PIN(2, 4);
-//     uart_write("\nTesting PWM ...");
-//     uart_write("\n    FREQ 1kHz, duty_cycle 40% ");
+//     uart_printf("\nTesting PWM ...");
+//     uart_printf("\n    FREQ 1kHz, duty_cycle 40% ");
 
 //     pwm_init(FREQUENCY_1KHZ, channel_1, channel_2);
 //     pwm_set_duty(CHANNEL_1, 10);
 //     pwm_set_duty(CHANNEL_2, 80);
-//     uart_write("\n    Meansure by adc!");
+//     uart_printf("\n    Meansure by adc!");
 
 // }
 
@@ -146,22 +149,38 @@ void button_press_cb(void* param)
 //     param = NULL;
 //     char buff[10];
 //     itoa(adc_read_single_channel(), buff, 10);
-//     uart_write("\n");
-//     uart_write(buff);
+//     uart_printf("\n");
+//     uart_printf(buff);
 // }
 
 // void adc_test(void)
 // {
-//     uart_write("\nADC module testing...");
-//     uart_write("\n    Setup Pin1.4 as input signal");
+//     uart_printf("\nADC module testing...");
+//     uart_printf("\n    Setup Pin1.4 as input signal");
 
 //     // Setup Pin1.4 as input of singgle channel adc
 //     adc_init(ADC_CHA4, ADC_SINGLE_CHANNEL, ENABLE_INTERRUPT_ADC);
-//     uart_write("\n    Start sampling T = 500ms in 10s");
+//     uart_printf("\n    Start sampling T = 500ms in 10s");
 //     timer_create(MILI_TIMER_REPEAT, 500, adc_sampling, NULL);
 //     timer_create(SECOND_TIMER_ONE_TIME, 10, timer_delete, &adc_sampling);
 // }
 
+void i2c_test(void)
+{
+        i2c_init(I2C_MODULE_1);
+        #define MPU6050_ADDRESS         0x68
+        #define MPU6050_WHO_AM_I        0x75
+        uart_printf("\nTesting i2c ...");
+        uart_printf("\n    Please connect device to i2c module!");
+
+        uint8_t ret = i2c_read_byte(MPU6050_ADDRESS, MPU6050_WHO_AM_I);
+        uart_printf("\n    Value of mpu6050 who am i: ");
+        uart_printf(to_string(ret));
+        uart_printf("\n    Please get_confirm (press 'y')...");
+        while (!g_test_ok);
+
+        uart_printf("\n    i2c function is ok :D");
+}
 
 /*-------------------------------------------------------
          Service Testing
@@ -170,12 +189,12 @@ void button_press_cb(void* param)
 /* Timer testing */
 void timer_test()
 {
-        uart_write("\nTimer Service testing...");
+        uart_printf("\nTimer Service testing...");
 
-        uart_write("\n    Create timer blink LED_GREEN 100ms...");
+        uart_printf("\n    Create timer blink LED_GREEN 100ms...");
         timer_create(MILI_TIMER_REPEAT, 100, pulse_led, &LED_GREEN);
 
-        uart_write("\n    Create timer blink LED_BLUE 1s");
+        uart_printf("\n    Create timer blink LED_BLUE 1s");
         timer_create(SECOND_TIMER_REPEAT, 1, pulse_led, &LED_BLUE);
 
 }
@@ -183,8 +202,8 @@ void timer_test()
 /* Event testing */
 void event_test()
 {
-        uart_write("\nEvent Service testing...");
-        uart_write("\n    Press button to delete timer....");
+        uart_printf("\nEvent Service testing...");
+        uart_printf("\n    Press button to delete timer....");
         gpio_init_irq(BUTTON, GPIO_FALLING);
         gpio_irq_register_callback(event_cb);
 
@@ -214,7 +233,6 @@ void handle_event_queue()
                         break;
                 }
         }
-        delay_ms(500);
 }
 
 /*
@@ -248,11 +266,11 @@ void handle_event_queue()
 //                                     (gyroDataRaw.y), \
 //                                     (gyroDataRaw.z));
 
-//         uart_write((char*)msg);
+//         uart_printf((char*)msg);
 
 //         sprintf((char*)msg,"\n0x%x\n\n", i2c_read_byte( MPU6050_ADDRESS, MPU6050_WHO_AM_I));
 
-//         uart_write((char*)msg);
+//         uart_printf((char*)msg);
 
 
 //         timer_create(MILI_TIMER_REPEAT,Tsample,samplingProcess, NULL);
@@ -272,11 +290,11 @@ void handle_event_queue()
 //     // uint8_t channel_2 = GPIO_PIN(2, 4);
 //     uint16_t duty_cycle = 0;
 
-//     uart_write("\nTesting PWM by dimming led...");
+//     uart_printf("\nTesting PWM by dimming led...");
 //     pwm_init(PWM_CHANNEL_1 + PWM_CHANNEL_4, 100000);
 
 //     while (1) {
-//         // uart_write("\n set duty_cycle");
+//         // uart_printf("\n set duty_cycle");
 //         pwm_set_duty(PWM_CHANNEL_1, duty_cycle);
 //         pwm_set_duty(PWM_CHANNEL_4, 1000 - duty_cycle);
 //         duty_cycle += 20;

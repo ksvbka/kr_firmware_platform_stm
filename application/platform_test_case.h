@@ -12,7 +12,7 @@
 #include "system.h"
 #include "gpio.h"
 #include "uart.h"
-// #include "i2c_hw.h"
+#include "i2c.h"
 // #include "adc.h"
 #include "pwm.h"
 // #include "lcd_5110.h"
@@ -23,6 +23,7 @@
 /*Service*/
 #include "timer.h"
 #include "event.h"
+#include "utility.h"
 
 void platform_test_case(void);
 
@@ -32,6 +33,7 @@ void uart_test(void);
 void get_confirm(void* param);
 void gpio_test(void);
 // void pwm_test(void);
+void i2c_test(void);
 void pwm_test_dimming_led(void);
 // void adc_test(void); // Meansure value of PWM output
 // void lcd_5110(void);
