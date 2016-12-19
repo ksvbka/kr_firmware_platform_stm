@@ -8,6 +8,7 @@
 #define __UART_H__
 
 #include "typedef.h"
+#include "stdarg.h"
 
 /**
  *  USART1:
@@ -43,6 +44,9 @@ void uart_putc(char c);
 
 void uart_write(const char *data_buffer);
 
+void uart_printf(char s[], ...);
+
 void uart_irq_register_callback(callback fnCallback);
+
 
 #endif// __UART_H__

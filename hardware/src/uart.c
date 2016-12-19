@@ -93,7 +93,50 @@ void uart_write(const char *data_buffer)
                 uart_putc(*data_buffer++);
         }
 }
+/* Helper function*/
+char* int_to_string(int i);
 
+char* float_to_string(double d);
+
+void uart_printf(char s[], ...)
+{
+        va_list arglist;
+        va_start(arglist, s);
+
+        // parse the format string
+        uint16_t i = 0;
+        while (s[i] != 0) {
+                if (s[i] != '%') { // normal char
+                        if (s[i] == '\n')
+                                uart_putc('\r');
+                        uart_putc(s[i]);
+                        i++;
+                        continue;
+                }
+
+                i++; // skip past the % to the format specifier
+                switch (s[i]) {
+                case '%':
+                        uart_putc(s[i]);
+                        i++;
+                        break;
+                case 'd': // int16
+                        uart_write(int_to_string(va_arg(arglist, int)));
+                        i++;
+                        break;
+                case 'f':
+                        uart_write(float_to_string(va_arg(arglist, double)));
+                        i++;
+                        break;
+                case 's':
+                        uart_write(va_arg(arglist, char*));
+                        i++;
+                        break;
+                default:
+                        return; // invalid format specifier
+                }
+        }
+}
 
 void uart_irq_register_callback(callback fnCallback)
 {
@@ -129,4 +172,76 @@ uint32_t convert_baudrate(baudrate_t baudrate)
         default:
                 return 115200;
         }
+}
+
+
+char* int_to_string(int i)
+{
+        static char buf[10];
+        char* pbuf = buf;
+
+        char sign = '+';
+        short len = 0;
+
+        if (i < 0) {
+                sign = '-';
+                i = -i;
+        }
+        do {
+                *pbuf++ = (i % 10) + '0';
+                len++;
+                i /= 10;
+        } while (i != 0);
+
+        if (sign == '-') {
+                *pbuf++ = '-';
+                len++;
+        }
+
+        for (i = 0; i < len / 2; i++) {
+                buf[len] = buf[i];
+                buf[i] = buf[len - 1 - i];
+                buf[len - 1 - i] = buf[len];
+        }
+        buf[len] = 0;
+        return buf;
+}
+
+char* float_to_string(double d)
+{
+        int wholePart = (int) d;
+        int precision = 3; /*Default 3 ditgit*/
+
+       /* Deposit the whole part of the number.*/
+        char* buffer = int_to_string(wholePart);
+
+        /* Now work on the faction if we need one.*/
+        if (precision > 0) {
+
+                /* We do, so locate the end of the string and insert a decimal point.*/
+                char *endOfString = buffer;
+                while (*endOfString != '\0') endOfString++;
+                *endOfString++ = '.';
+
+                /* Now work on the fraction, be sure to turn any negative values positive.*/
+                if (d < 0) {
+                        d *= -1;
+                        wholePart *= -1;
+                }
+                double fraction = d - wholePart;
+                while (precision > 0) {
+                        /* Multipleby ten and pull out the digit.*/
+                        fraction *= 10;
+                        wholePart = (long) fraction;
+                        *endOfString++ = '0' + wholePart;
+
+                        /* Update the fraction and move on to the next digit.*/
+                        fraction -= wholePart;
+                        precision--;
+                }
+                /* Terminate the string.*/
+                *endOfString = '\0';
+        }
+
+        return buffer;
 }
