@@ -4,8 +4,10 @@
 * @Last Modified by:   ksvbka
 * @Last Modified time: 2016-12-11 23:31:34
 */
-#include "uart.h"
+
 #include "stm32f0xx.h"
+#include "uart.h"
+#include "gpio.h"
 
 /**
  *  USART1:
@@ -19,37 +21,25 @@
  */
 
 #ifdef USE_UART1_MODULE
-        #define USARTx                  (USART1)
-        #define RCC_APB2Periph_USARTx   (RCC_APB2Periph_USART1)
-        #define USARTx_IRQn             (USART1_IRQn)
+#define USARTx                  (USART1)
+#define RCC_APB2Periph_USARTx   (RCC_APB2Periph_USART1)
+#define USARTx_IRQn             (USART1_IRQn)
 // #else /*Use UART2 module*/
 //      #define USARTx                  (USART2)
 //      #define RCC_APB2Periph_USARTx   (RCC_APB2Periph_USART2)
 //      #define USARTx_IRQn             (USART2_IRQn)
 #endif
 
-#ifdef USE_UART_PIN_A9_A10
-        #define TX_PIN                  (GPIO_Pin_9)
-        #define RX_PIN                  (GPIO_Pin_10)
-        #define TX_SOURCE               (GPIO_PinSource9)
-        #define RX_SOURCE               (GPIO_PinSource10)
-        #define GPIO_PORT               (GPIOA)
-        #define RCC_AHBPeriph_GPIOx     (RCC_AHBPeriph_GPIOA)
-        #define GPIO_UART               (GPIO_AF_1)
-#endif
+/* Define USART1 pin*/
+/* Option 1: GPIOB_6 GPIOB_7*/
+#define TX_PIN          GPIO_PIN(GPIO_PB, 6)
+#define RX_PIN          GPIO_PIN(GPIO_PB, 7)
+#define UART_FUNCTION   AF0
 
-#ifdef USE_UART_PIN_B6_B7
-        #define TX_PIN                  (GPIO_Pin_6)
-        #define RX_PIN                  (GPIO_Pin_7)
-        #define TX_SOURCE               (GPIO_PinSource6)
-        #define RX_SOURCE               (GPIO_PinSource7)
-        #define GPIO_PORT               (GPIOB)
-        #define RCC_AHBPeriph_GPIOx     (RCC_AHBPeriph_GPIOB)
-        #define GPIO_UART               (GPIO_AF_0)
-#endif
-
-
-
+/* Option 2: GPIOA_9 GPIOA_10*/
+// #define TX_PIN          GPIO_PIN(GPIO_PA, 9)
+// #define RX_PIN          GPIO_PIN(GPIO_PA, 10)
+// #define UART_FUNCTION   AF1
 
 /* Global callback function variable*/
 static callback g_uart_callback =  NULL;
@@ -59,20 +49,12 @@ uint32_t convert_baudrate(baudrate_t baudrate); /* Convert baudrate_t to uint32_
 
 void uart_init(baudrate_t baudrate, bool enable_interrupt)
 {
+        /* Turn on clock for UARTx module*/
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_USARTx, ENABLE);
-        RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOx, ENABLE);
 
-        GPIO_PinAFConfig(GPIO_PORT, TX_SOURCE, GPIO_UART);
-        GPIO_PinAFConfig(GPIO_PORT, RX_SOURCE, GPIO_UART);
-
-        /* Configure USART Tx and Rx pin as alternate function  */
-        GPIO_InitTypeDef GPIO_InitStructure;
-        GPIO_InitStructure.GPIO_Pin = TX_PIN | RX_PIN;
-        GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-        GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF; /* alternate mode*/
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIO_PORT, &GPIO_InitStructure);
+        /* Define uart pin*/
+        gpio_init_function(TX_PIN, UART_FUNCTION, PUSH_PULL, PULL_UP);
+        gpio_init_function(RX_PIN, UART_FUNCTION, PUSH_PULL, PULL_UP);
 
         /* Configure USART param*/
         USART_InitTypeDef USART_InitStructure;
