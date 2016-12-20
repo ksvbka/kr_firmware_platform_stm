@@ -44,6 +44,7 @@ void pwm_init(uint8_t channel, uint16_t frequency)
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
         GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+        // GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 
         /* Configure output chanel*/
         if (channel & PWM_CHANNEL_1) {

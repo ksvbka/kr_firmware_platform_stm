@@ -19,6 +19,8 @@ static void adc_init_pin(uint8_t channels);
 
 void adc_init(uint8_t channels, uint8_t mode, bool enable_interrupt_adc)
 {
+        /*NOTE: Fix mode!!!*/
+
         /* Enable ADC clock*/
         RCC->APB2ENR |= RCC_APB2ENR_ADC1EN;
 
