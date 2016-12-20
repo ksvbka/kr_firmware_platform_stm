@@ -9,6 +9,7 @@
 
 #include "typedef.h"
 #include "gpio.h"
+
 /**
  * STM32F0 has 2 I2C module is I2C1 and I2C2.
  * I2C pin canbe config as folow:
@@ -18,8 +19,6 @@
  *         I2C2 CLK:    PB10 AF1        PF6 AF
  *         I2C2 SDA:    PB11 AF1        PF7 AF
  */
-
-
 
 #define I2C_MODULE_1 0x01
 #define I2C_MODULE_2 0x02
