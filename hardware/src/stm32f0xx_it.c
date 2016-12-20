@@ -32,6 +32,7 @@
 #include "system.h"
 #include "gpio.h"
 #include "uart.h"
+#include "adc.h"
 
 /** @addtogroup STM32F0-Discovery_Demo
   * @{
@@ -144,6 +145,11 @@ void USART1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
     uart_irq_handler();
+}
+
+void ADC1_COMP_IRQHandler(void)
+{
+    adc_irq_handler();
 }
 /**
   * @}
