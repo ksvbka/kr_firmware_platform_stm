@@ -2,10 +2,6 @@
 #include "stm32f0xx.h"
 #include "gpio.h"
 
-/* Debug */
-#include "uart.h"
-
-
 static I2C_TypeDef* I2Cx = NULL;
 
 void i2c_init(uint8_t i2c_module)
@@ -75,7 +71,7 @@ uint8_t i2c_read_byte (uint8_t device_addr, uint8_t reg_addr)
 
         /* Send read command */
         while ((I2Cx->ISR & I2C_ISR_TC) == 0);
-        I2Cx->CR2 = (device_addr << 1) | I2C_CR2_RD_WRN | (1 << 16);
+        I2Cx->CR2 = (device_addr << 1) | I2C_CR2_RD_WRN | I2C_CR2_AUTOEND | (1 << 16);
         I2Cx->CR2 |= I2C_CR2_START;
 
         /* Receive data */
@@ -97,7 +93,7 @@ uint8_t i2c_read_data (uint8_t device_addr, uint8_t reg_addr, uint8_t *rx_buffer
 
         /* Send read command */
         while ((I2Cx->ISR & I2C_ISR_TC) == 0);
-        I2Cx->CR2 = (device_addr << 1) | I2C_CR2_RD_WRN | (length << 16);
+        I2Cx->CR2 = (device_addr << 1) | I2C_CR2_RD_WRN | I2C_CR2_AUTOEND| (length << 16);
         I2Cx->CR2 |= I2C_CR2_START;
 
         /* Read data and store to buffer */
