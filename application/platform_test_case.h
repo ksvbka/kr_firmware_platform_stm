@@ -15,10 +15,11 @@
 #include "i2c.h"
 #include "adc.h"
 #include "pwm.h"
+#include "timer_hw.h"
 // #include "lcd_5110.h"
 // #include "flash.h"
 // #include "comparator.h"
-// #include "mpu6050.h"
+#include "mpu6050.h"
 
 /*Service*/
 #include "timer.h"
@@ -36,6 +37,8 @@ void pwm_test(void);
 void i2c_test(void);
 void pwm_test_dimming_led(void);
 void adc_test(void); // Meansure value of PWM output
+void timer_hw_test(void);
+
 // void lcd_5110(void);
 /* Test case for Service*/
 void timer_test(void);
@@ -44,7 +47,7 @@ void handle_event_queue(void);
 void event_test(void);
 
 /* Test i2c and external sensor*/
-// void mpu6050_test(void);
+void mpu6050_test(void);
 // void sampling_process(void* param);
 
 #endif //__PLATFORM_TEST_CASE__H__

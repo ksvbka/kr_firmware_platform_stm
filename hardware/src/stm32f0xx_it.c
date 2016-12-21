@@ -33,6 +33,7 @@
 #include "gpio.h"
 #include "uart.h"
 #include "adc.h"
+#include "timer_hw.h"
 
 /** @addtogroup STM32F0-Discovery_Demo
   * @{
@@ -150,6 +151,10 @@ void USART2_IRQHandler(void)
 void ADC1_COMP_IRQHandler(void)
 {
     adc_irq_handler();
+}
+
+void TIM3_IRQHandler(void) {
+    timer_hw_irq_handler();
 }
 /**
   * @}
