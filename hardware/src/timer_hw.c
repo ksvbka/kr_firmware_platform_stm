@@ -1,14 +1,15 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:33:44
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-20 22:12:26
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2016-12-23 11:06:30
 */
 
 #include "stm32f0xx.h"
 #include "timer_hw.h"
 
 static callback g_callback_timer = NULL;
+static void* g_param = NULL;
 
 void timer_hw_init(void)
 {
@@ -22,9 +23,10 @@ void timer_hw_init(void)
 
 }
 
-void timer_hw_start(uint32_t time , callback task)
+void timer_hw_start(uint32_t time , callback task, void* param)
 {
         g_callback_timer = task;
+        g_param          = param;
 
         /* Time base configuration */
         TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -50,7 +52,7 @@ void timer_hw_stop(void* param)
 void timer_hw_irq_handler(void)
 {
         if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
-                g_callback_timer(NULL);
+                g_callback_timer(g_param);
                 TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
         }
 }
