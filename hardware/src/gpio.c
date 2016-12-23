@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-11 23:28:00
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-11 23:30:38
+* @Last Modified time: 2016-12-23 01:18:47
 */
 
 #include "gpio.h"
@@ -125,7 +125,7 @@ void gpio_toggle(uint8_t pin)
 
 void gpio_write(uint8_t pin, bool value)
 {
-        (value == TRUE) ? gpio_set(pin) : gpio_clear(pin);
+        (value == FALSE) ? gpio_clear(pin) : gpio_set(pin);
 }
 
 void gpio_write_port(uint8_t port, uint16_t port_value)
