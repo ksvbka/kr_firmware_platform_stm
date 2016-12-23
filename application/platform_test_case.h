@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-11-30 21:32:06
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-19 21:56:39
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2016-12-23 10:22:01
 */
 
 #ifndef __PLATFORM_TEST_CASE__H__
@@ -19,7 +19,6 @@
 // #include "lcd_5110.h"
 // #include "flash.h"
 // #include "comparator.h"
-#include "mpu6050.h"
 
 /*Service*/
 #include "timer.h"
