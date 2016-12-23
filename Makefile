@@ -25,7 +25,6 @@ CFLAGS  = -Wall -g -std=c99 -Os
 CFLAGS += -mlittle-endian -mcpu=cortex-m0  -march=armv6-m -mthumb
 CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -Wl,--gc-sections -Wl,-Map=$(BIN_DIR)/$(PROJ_NAME).map
-
 ###################################################
 
 vpath %.c application
@@ -82,7 +81,7 @@ proj: 	$(BIN_DIR)/$(PROJ_NAME).elf
 $(OUT).elf : $(OBJ_HW) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
 	@echo Lingking ...
 	@mkdir -p $(BIN_DIR)
-	@$(CC) $(CFLAGS) $^ -o $@ -L$(STD_PERIPH_LIB) -lstm32f0 -L$(LDSCRIPT_INC) -Tstm32f0.ld
+	@$(CC) $(CFLAGS) $^ -o $@ -L$(STD_PERIPH_LIB) -lstm32f0 -L$(LDSCRIPT_INC) -Tstm32f0.ld -lm #add lm for math.h
 
 	@$(OBJCOPY) -O ihex $(OUT).elf $(BIN_DIR)/$(PROJ_NAME).hex
 	@$(OBJCOPY) -O binary $(OUT).elf $(BIN_DIR)/$(PROJ_NAME).bin
@@ -116,8 +115,17 @@ $(OBJ_DIR)/%.o:$(SRC_APPDIR)/%.c
 program: $(OUT).bin
 	openocd -f $(OPENOCD_BOARD_DIR)/stm32f0discovery.cfg -f $(OPENOCD_PROC_FILE) -c "stm_flash `pwd`/build/bin/$(PROJ_NAME).bin" -c shutdown
 
-debug: $(OUT).elf
-	. extra/debug_nemiver.sh
+debug_server: $(OUT).elf
+	# . extra/debug_nemivier.sh
+	openocd -f $(OPENOCD_BOARD_DIR)/stm32f0discovery.cfg
+
+debug_nemivier:
+	arm-none-eabi-gdb --batch --command=config_gdb.cfg $(OUT).elf
+	file $(OUT).elf
+	nemiver --remote=localhost:3333 --gdb-binary=arm-none-eabi-gdb $(OUT).elf
+
+debug_cli:
+	arm-none-eabi-gdb --silent --command=config_gdb.cfg $(OUT).elf
 
 clean:
 	find ./ -name '*~' | xargs rm -f
@@ -129,3 +137,5 @@ distclean: clean
 	rm -f *.o
 	rm -rf $(BUILD_DIR)
 	$(MAKE) -C $(STD_PERIPH_LIB) clean
+
+.PHONY: clean debug_server debug_nemivier debug_cli
