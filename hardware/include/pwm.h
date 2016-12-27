@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-12-15 20:58:04
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-15 21:38:00
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2016-12-27 10:20:25
 */
 
 /*
@@ -13,7 +13,7 @@
  *     - The Channel 2 output is GPIOA_9
  *     - The Channel 3 output is GPIOA_10
  *     - The Channel 4 output is GPIOA_11
- * Duty cycle canbe set in range [0..1000]
+ * Duty cycle canbe set in range [0..100]
  */
 
 #ifndef __PWM_H__
@@ -32,7 +32,7 @@
 */
 void pwm_init(uint8_t channels, uint16_t frequency);
 
-/* Set duty cycle in [0 : 1000]*/
+/* Set duty cycle in [0 : 100]*/
 void pwm_set_duty(uint8_t channels, uint16_t duty_cycle);
 
 #endif //__PWM_H__

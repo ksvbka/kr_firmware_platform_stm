@@ -1,17 +1,29 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-12-15 20:58:33
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-15 21:40:58
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2016-12-27 10:38:00
 */
 
 #include "pwm.h"
+#include "gpio.h"
 
 static uint16_t timer_period = 0;
 
+static uint8_t channel1_pin = GPIO_PIN(GPIO_PA, 8);
+static uint8_t channel2_pin = GPIO_PIN(GPIO_PA, 9);
+static uint8_t channel3_pin = GPIO_PIN(GPIO_PA, 10);
+static uint8_t channel4_pin = GPIO_PIN(GPIO_PA, 11);
+
+
+/* Init pwm module, channels canbe init as multi channel.
+*  Eg:
+*       pwm_init(PWM_CHANNEL1 + PWM_CHANNEL_2, 10000);
+*/
 void pwm_init(uint8_t channel, uint16_t frequency)
 {
         timer_period = (SystemCoreClock / frequency) - 1;
+
         /* TIM1 clock enable */
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 , ENABLE);
 
@@ -28,7 +40,7 @@ void pwm_init(uint8_t channel, uint16_t frequency)
 
         /* Channel 1, 2, 3 and 4 Configuration in PWM mode */
         TIM_OCInitTypeDef  TIM_OCInitStructure;
-        TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+        TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;
         TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
         TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;
         TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
@@ -37,47 +49,34 @@ void pwm_init(uint8_t channel, uint16_t frequency)
         TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCIdleState_Reset;
         TIM_OCInitStructure.TIM_Pulse = 0; /* Default is 0*/
 
-        /* Configure GPIO as output */
-        RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
-        GPIO_InitTypeDef GPIO_InitStructure;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-        GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-        // GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-
         /* Configure output chanel*/
         if (channel & PWM_CHANNEL_1) {
                 TIM_OC1Init(TIM1, &TIM_OCInitStructure);
+                TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);
 
                 /* Configure GPIOA8 as TIM1 output*/
-                GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
-                GPIO_Init(GPIOA, &GPIO_InitStructure);
-                GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_2);
+                gpio_init_function(channel1_pin, AF2, PUSH_PULL, PULL_UP);
         }
         if (channel & PWM_CHANNEL_2) {
                 TIM_OC2Init(TIM1, &TIM_OCInitStructure);
+                TIM_OC2PreloadConfig(TIM1, TIM_OCPreload_Enable);
 
-                /* Configure GPIOA8 as TIM1 output*/
-                GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-                GPIO_Init(GPIOA, &GPIO_InitStructure);
-                GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_2);
+                /* Configure GPIOA9 as TIM1 output*/
+                gpio_init_function(channel2_pin, AF2, PUSH_PULL, PULL_UP);
         }
         if (channel & PWM_CHANNEL_3) {
                 TIM_OC3Init(TIM1, &TIM_OCInitStructure);
+                TIM_OC3PreloadConfig(TIM1, TIM_OCPreload_Enable);
 
-                /* Configure GPIOA8 as TIM1 output*/
-                GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-                GPIO_Init(GPIOA, &GPIO_InitStructure);
-                GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_2);
+                /* Configure GPIOA10 as TIM1 output*/
+                gpio_init_function(channel3_pin, AF2, PUSH_PULL, PULL_UP);
         }
         if (channel & PWM_CHANNEL_4) {
                 TIM_OC4Init(TIM1, &TIM_OCInitStructure);
+                TIM_OC4PreloadConfig(TIM1, TIM_OCPreload_Enable);
 
-                /* Configure GPIOA8 as TIM1 output*/
-                GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-                GPIO_Init(GPIOA, &GPIO_InitStructure);
-                GPIO_PinAFConfig(GPIOA, GPIO_PinSource11, GPIO_AF_2);
+                /* Configure GPIOA11 as TIM1 output*/
+                gpio_init_function(channel4_pin, AF2, PUSH_PULL, PULL_UP);
         }
 
         /* TIM1 counter enable */
@@ -86,16 +85,20 @@ void pwm_init(uint8_t channel, uint16_t frequency)
         /* TIM1 Main Output Enable */
         TIM_CtrlPWMOutputs(TIM1, ENABLE);
 }
+
+/* Set duty cycle in [0 : 100]*/
 void pwm_set_duty(uint8_t channel, uint16_t duty_cycle)
 {
-        if (duty_cycle > 1000)
-                duty_cycle = 1000;
+        if (duty_cycle > 100)
+                duty_cycle = 100;
+
+        uint16_t pulse = (uint16_t) (((uint32_t) duty_cycle * (timer_period - 1)) / 100);
         if (channel & PWM_CHANNEL_1)
-                TIM1->CCR1 = (uint16_t)(((uint32_t)duty_cycle * (timer_period) - 1) / 1000);
+                TIM1->CCR1 = pulse;
         if (channel & PWM_CHANNEL_2)
-                TIM1->CCR2 = (uint16_t)(((uint32_t)duty_cycle * (timer_period) - 1) / 1000);
+                TIM1->CCR2 = pulse;
         if (channel & PWM_CHANNEL_3)
-                TIM1->CCR3 = (uint16_t)(((uint32_t)duty_cycle * (timer_period) - 1) / 1000);
+                TIM1->CCR3 = pulse;
         if (channel & PWM_CHANNEL_4)
-                TIM1->CCR4 = (uint16_t)(((uint32_t)duty_cycle * (timer_period) - 1) / 1000);
+                TIM1->CCR4 = pulse;
 }
