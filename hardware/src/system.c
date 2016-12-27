@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-12-11 20:12:51
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-11 23:31:27
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2016-12-27 10:40:45
 */
 #include "system.h"
 #include "stm32f0xx.h"
@@ -15,7 +15,8 @@ static volatile uint32_t g_second_count;
 extern void SystemCoreClockUpdate (void);
 static void set_clock_source(uint8_t clock_source);
 
-void system_init(uint8_t clock_source) {
+void system_init(uint8_t clock_source)
+{
 	/**
 	 * Only config clock source, other config already called in SystemInit() in
 	 * system_stm32f0xx.c
@@ -35,32 +36,37 @@ void system_init(uint8_t clock_source) {
 
 
 /*  Function handles SysTick Handler, will be called in SysTick_Handler() implement in stm32f0xx_it.c*/
-void sys_tick_irq_handler() {
+void sys_tick_irq_handler()
+{
 	g_tick_count++;
 	g_count++;
-	if(g_count == 1000) {
+	if (g_count == 1000) {
 		g_second_count++;
 		g_count = 0;
 	}
 }
 
-uint32_t get_tick_count() {
+uint32_t get_tick_count()
+{
 	return g_tick_count;
 }
 
-uint32_t get_second_count() {
+uint32_t get_second_count()
+{
 	return g_second_count;
 }
 
-void delay_ms(uint32_t time_ms){
+void delay_ms(uint32_t time_ms)
+{
 	uint32_t now = get_tick_count();
 	uint32_t then = now + time_ms;
-	while(then >= now){
+	while (then >= now) {
 		now = get_tick_count();
 	}
 }
 
-void set_clock_source(uint8_t clock_source) {
+void set_clock_source(uint8_t clock_source)
+{
 	__IO uint32_t StartUpCounter = 0, HSEStatus = 0;
 	switch (clock_source) {
 	case CLOCK_SOURCE_HSI:
