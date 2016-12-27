@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:33:44
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-22 22:36:55
+* @Last Modified time: 2016-12-24 09:34:11
 */
 
 #include "mpu6050.h"
@@ -222,13 +222,13 @@
 
 
 /* Off set value to calibrate Acc*/
-static int16_t acc_offsetX = 65;
-static int16_t acc_offsetY = -305;
-static int16_t acc_offsetZ = 53;
+static int16_t acc_offsetX = 106;
+static int16_t acc_offsetY = -219;
+static int16_t acc_offsetZ = -47;
 
 /*Offset value to calibrate Gyro */
-static int16_t gyro_offsetX = -2;
-static int16_t gyro_offsetY = 3;
+static int16_t gyro_offsetX = 0;
+static int16_t gyro_offsetY = 1;
 static int16_t gyro_offsetZ = -18;
 
 /* Scale Value config for ACC - default is 2G*/
