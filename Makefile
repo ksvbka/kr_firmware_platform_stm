@@ -46,6 +46,11 @@ SRC_HWDIR 	= $(ROOT)/hardware/src
 SRC_HW 		= $(wildcard $(SRC_HWDIR)/*.c)
 OBJ_HW 		= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_HW)))
 
+# Peripherals object
+SRC_PERDIR 	= $(ROOT)/hardware_periph/src
+SRC_PER		= $(wildcard $(SRC_PERDIR)/*.c)
+OBJ_PER		= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_PER)))
+
 # Service source dir
 SRC_SVDIR 	= $(ROOT)/service/src
 SRC_SV 		= $(wildcard $(SRC_SVDIR)/*.c)
@@ -61,6 +66,7 @@ CFLAGS += -I $(STD_PERIPH_LIB)/CMSIS/Include -I $(STD_PERIPH_LIB)/STM32F0xx_StdP
 CFLAGS += -include $(STD_PERIPH_LIB)/stm32f0xx_conf.h
 CFLAGS += -I $(ROOT)/hardware/include
 CFLAGS += -I $(ROOT)/service/include
+CFLAGS += -I $(ROOT)/hardware_periph/include
 CFLAGS += -I $(ROOT)/application
 
 # need if you want to build with -DUSE_CMSIS
@@ -78,7 +84,7 @@ lib:
 
 proj: 	$(BIN_DIR)/$(PROJ_NAME).elf
 
-$(OUT).elf : $(OBJ_HW) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
+$(OUT).elf : $(OBJ_HW) $(OBJ_PER) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
 	@echo Lingking ...
 	@mkdir -p $(BIN_DIR)
 	@$(CC) $(CFLAGS) $^ -o $@ -L$(STD_PERIPH_LIB) -lstm32f0 -L$(LDSCRIPT_INC) -Tstm32f0.ld -lm #add lm for math.h
@@ -96,6 +102,12 @@ $(OBJ_DIR)/%.o:$(SRC_STARTUP_DIR)/%.s
 
 # Bulding hardware object
 $(OBJ_DIR)/%.o:$(SRC_HWDIR)/%.c
+	@echo Building $(notdir $<) ...
+	@mkdir -p $(OBJ_DIR)
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+# Bulding peripherals object
+$(OBJ_DIR)/%.o:$(SRC_PERDIR)/%.c
 	@echo Building $(notdir $<) ...
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
