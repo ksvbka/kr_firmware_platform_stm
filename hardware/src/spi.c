@@ -2,7 +2,7 @@
 * @Author: Kienltb
 * @Date:   2016-12-26 15:01:58
 * @Last Modified by:   Kienltb
-* @Last Modified time: 2016-12-26 15:35:07
+* @Last Modified time: 2016-12-28 16:28:35
 */
 
 #include "spi.h"
@@ -61,8 +61,8 @@ void spi_init(uint8_t spi_module)
 
 }
 
-/* write 1 byte */
-void spi_write_byte(uint8_t data)
+/* write 1 byte and return 1byte received*/
+uint8_t spi_tranfer_byte(uint8_t data)
 {
         uint32_t spi_dr = (uint32_t) spi;
         spi_dr += 0x0C;
@@ -70,10 +70,11 @@ void spi_write_byte(uint8_t data)
         while ((spi->SR & SPI_SR_TXE) == 0);    /* wait for empty TX buffer*/
         *(volatile uint8_t*) spi_dr = data;     /* send one byte of data*/
         while ((spi->SR & SPI_SR_RXNE) == 0);   /* wait for RX buffer contents*/
+        return *(volatile uint8_t*) spi_dr;                             // return the received byte
 }
 
-/* write length byte to rx_buffer*/
-void spi_write_data(uint8_t* rx_buffer, uint8_t length)
+/* write length byte from rx_buffer and return last byte received*/
+uint8_t spi_tranfer_data(uint8_t* rx_buffer, uint8_t length)
 {
         uint32_t spi_dr = (uint32_t) spi;
         spi_dr += 0x0C;
@@ -84,4 +85,5 @@ void spi_write_data(uint8_t* rx_buffer, uint8_t length)
                 *(volatile uint8_t*) spi_dr = rx_buffer[i];     /* send one byte of data*/
                 while ((spi->SR & SPI_SR_RXNE) == 0);           /* wait for RX buffer contents*/
         }
+        return *(volatile uint8_t*) spi_dr;
 }

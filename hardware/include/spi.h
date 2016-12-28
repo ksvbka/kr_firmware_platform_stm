@@ -2,7 +2,7 @@
 * @Author: Kienltb
 * @Date:   2016-12-26 15:01:44
 * @Last Modified by:   Kienltb
-* @Last Modified time: 2016-12-26 15:35:13
+* @Last Modified time: 2016-12-28 16:27:20
 */
 
 #ifndef __SPI_H__
@@ -41,10 +41,10 @@
 /* Init SPI module (SPI_MODULE1, SPI_MODULE2) */
 void spi_init(uint8_t spi_module);
 
-/* write 1 byte */
-void spi_write_byte(uint8_t data);
+/* write 1 byte and return 1byte received*/
+uint8_t spi_tranfer_byte(uint8_t data);
 
-/* write length byte to rx_buffer*/
-void spi_write_data(uint8_t* rx_buffer, uint8_t length);
+/* write length byte from rx_buffer and return last byte received*/
+uint8_t spi_tranfer_data(uint8_t* rx_buffer, uint8_t length);
 
 #endif //__SPI_H__
