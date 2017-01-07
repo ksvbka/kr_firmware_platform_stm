@@ -1,40 +1,36 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-12-11 23:29:12
-* @Last Modified by:   Kienltb
-* @Last Modified time: 2016-12-23 11:17:54
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2017-01-08 01:16:54
 */
 
 #include "balance_robot.h"
+#include "string.h"
 
-#define SAMPLE_TIME 0.005f /*s, <=> 5ms*/
+#define SAMPLE_TIME 0.002 /*s, <=> 2ms, 500hz*/
 
 /* Robot param */
 robot_t robot = {
-        .current_angle = 0,
+        .current_angle = 0.0,
         .motor_left = {
-                .direction = STOP,
-                .in1 = GPIO_PIN(GPIO_PA, 11),
-                .in2 = GPIO_PIN(GPIO_PA, 10),
-                .pwm_channel = PWM_CHANNEL_2,
-                .duty_cycle  = 0,
-        },
-        .motor_right = {
-                .direction = STOP,
                 .in1 = GPIO_PIN(GPIO_PC, 8),
                 .in2 = GPIO_PIN(GPIO_PC, 9),
                 .pwm_channel = PWM_CHANNEL_1,
-                .duty_cycle  = 0,
         },
-        .enable_pin = GPIO_PIN(GPIO_PC, 7),
+        .motor_right = {
+                .in1 = GPIO_PIN(GPIO_PA, 10),
+                .in2 = GPIO_PIN(GPIO_PA, 11),
+                .pwm_channel = PWM_CHANNEL_2,
+        },
         .pid = {
-                .kp  = 55.0,
+                .kp  = 100.0,
                 .ki  = 0,
                 .kd  = 0,
-                .out_min = -1000,
-                .out_max = 1000,
-                .last_input = 0,
-                .last_process_value = 0,
+                .out_min = -100,
+                .out_max = 100,
+                .last_error = 0,
+                .error_integral = 0,
                 .sample_time = SAMPLE_TIME, /*s*/
                 .direction = PID_DIRECT,
         },
@@ -43,20 +39,8 @@ robot_t robot = {
 
 /* Helper function*/
 static void robot_get_balance(robot_t* robot, int16_t pwm);
-static void motor_control(motor_t motor); /* Motor control driver */
 static void control_loop(void* robot);
 
-
-/* Motor control */
-void motor_control(motor_t motor)
-{
-        gpio_write(motor.in1, motor.direction & 0x01);
-        gpio_write(motor.in2, motor.direction & 0x02);
-
-        pwm_set_duty(motor.pwm_channel, motor.duty_cycle);
-}
-
-/* Robot control */
 
 void robot_init(robot_t* robot)
 {
@@ -70,27 +54,15 @@ void robot_init(robot_t* robot)
         uart_printf("\ni2c module init...");
 
         uart_printf("\nmpu6050 sensor init...");
-        mpu6050_init(ACC_CONFIG_2G, GYRO_CONFIG_2000);
+        mpu6050_init(ACC_CONFIG_2G, GYRO_CONFIG_250);
         // mpu6050_calibrate();         /* Calibrate sensor */
 
         uart_printf("\nTimer module init...");
         timer_hw_init();
 
-        /* Init gpio for motor control*/
-        gpio_init(robot->motor_left.in1, GPIO_OUT_PU);
-        gpio_init(robot->motor_left.in2, GPIO_OUT_PU);
-        gpio_init(robot->motor_right.in1, GPIO_OUT_PU);
-        gpio_init(robot->motor_right.in2, GPIO_OUT_PU);
-        gpio_init(robot->enable_pin, GPIO_OUT_PU);
-
-        /* Init state as STOP */
-        gpio_clear(robot->motor_left.in1);
-        gpio_clear(robot->motor_left.in2);
-        gpio_clear(robot->motor_right.in1);
-        gpio_clear(robot->motor_right.in2);
-        gpio_clear(robot->enable_pin);
-
-        pwm_init(robot->motor_left.pwm_channel + robot->motor_right.pwm_channel, 100000);
+        /* Init motor, init state as STOP */
+        motor_init(robot->motor_left);
+        motor_init(robot->motor_right);
 
         uart_printf("\nSet sample timer : %f", SAMPLE_TIME);
 
@@ -103,11 +75,9 @@ void robot_init(robot_t* robot)
 
 void robot_run(robot_t* robot)
 {
-        /*Enable motor driver*/
-        gpio_set(robot->enable_pin);
-
         /* Start control loop */
-        timer_hw_start(SAMPLE_TIME, control_loop, robot);
+        uint32_t sample_time_us = (uint32_t)(SAMPLE_TIME *1000000);
+        timer_hw_start(sample_time_us, control_loop, robot);
 
         while (robot->state == 1 /*run*/) {
                 /* Finite state machine of Robot */
@@ -118,61 +88,63 @@ void robot_run(robot_t* robot)
 void robot_stop(robot_t* robot)
 {
         timer_hw_stop(NULL);
-        gpio_clear(robot->enable_pin);
 }
 
 void control_loop(void* param)
 {
         robot_t* robot = (robot_t*)(param);
-        angle_t current_angle;
+        static angle_t current_angle; /* Use static because need to store gyro_angle*/
 
         angle_complementary_getvalue(&current_angle, SAMPLE_TIME);
+        // uart_printf("\n roll: %f\t pitch: %f", current_angle.roll, current_angle.pitch);
 
-        // uart_printf("\n x: %f \t y: %f\t z: %f", current_angle.x, current_angle.y, current_angle.z);
-
-        // calculate the pitch angle so that:    0 = vertical    -pi/2 = on its back    +pi/2 = on its face
+        // /* Calculate the pitch angle so that:    0 = vertical    -pi/2 = on its back    +pi/2 = on its face*/
         // float roll = angle_AHRS_get_roll(SAMPLE_TIME);
         // uart_printf("\npitch (rad): %f", roll * 57.296);
+        // uart_printf("\n x: %f \t y: %f \t z: %f \t", current_angle.x, current_angle.y, current_angle.z);
 
-        /* PID control calculate */
-        float pwm = pid_compute(&(robot->pid), 0, current_angle.x);
 
-        uart_printf("\n input: %f \t error: %f\t pwm: %f\t pwm_int: %d", current_angle.x, 0 - current_angle.x, pwm, (int16_t)pwm);
+        /* Test AHRS algorithm */
+        // angle_AHRS_getvalue(&current_angle);
+        // uart_printf("\n x: %f \t y: %f \t z: %f \t", current_angle.x * 57.296, current_angle.y * 57.296, current_angle.z * 57.296);
 
-        // robot_get_balance(robot,(int16_t)pwm);
 
-        /* Set output*/
+        // /* PID control calculate */
+        // uart_printf("\n y : %f", current_angle.y);
+        // float pwm = pid_compute(&(robot->pid), 0, current_angle.y);
+
+        // /* Set output*/
+        // robot_get_balance(robot, (int16_t)pwm);
+
+
+        /* Get offset of motor by increate duty cycle until the motor start move*/
+
+        // static int16_t duty_cycle = 0;
+        // static uint8_t direction = FORWARD;
+        // duty_cycle += 1;
+        // if (duty_cycle >= 100) {
+        //         direction = (direction == FORWARD) ? BACKWARD : FORWARD;
+        //         duty_cycle = 0;
+        // }
+
+        // uart_printf("\nduty: %d", duty_cycle);
+
+        // motor_control(robot->motor_left,  direction, duty_cycle);
+        // motor_control(robot->motor_right, direction, duty_cycle);
 }
 
+int16_t offset = 5;
 void robot_get_balance(robot_t* robot, int16_t pwm)
 {
-        if (pwm > 50) {
-                robot->motor_left.direction = BACKWARD;
-                robot->motor_right.direction = BACKWARD;
-
-                robot->motor_left.duty_cycle = pwm;
-                robot->motor_right.duty_cycle = pwm;
-
-                motor_control(robot->motor_left);
-                motor_control(robot->motor_right);
-        } else if (pwm < -50) {
-                robot->motor_left.direction = FORWARD;
-                robot->motor_right.direction = FORWARD;
-
-                robot->motor_left.duty_cycle = -pwm;
-                robot->motor_right.duty_cycle = -pwm;
-
-                motor_control(robot->motor_left);
-                motor_control(robot->motor_right);
+        if (pwm > offset) {
+                motor_control(robot->motor_left,  BACKWARD, pwm);
+                motor_control(robot->motor_right, BACKWARD, pwm);
+        } else if (pwm < -offset) {
+                motor_control(robot->motor_left,  FORWARD, -pwm);
+                motor_control(robot->motor_right, FORWARD, -pwm);
         } else {
-                robot->motor_left.direction = STOP;
-                robot->motor_right.direction = STOP;
-
-                robot->motor_left.duty_cycle = 0;
-                robot->motor_right.duty_cycle = 0;
-
-                motor_control(robot->motor_left);
-                motor_control(robot->motor_right);
+                motor_control(robot->motor_left,  STOP, 0);
+                motor_control(robot->motor_right, STOP, 0);
 
         }
 }

@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-12-11 23:29:12
-* @Last Modified by:   Kienltb
-* @Last Modified time: 2016-12-23 11:15:25
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2016-12-28 23:30:24
 */
 
 /* Implement 2 wheels Blance robot project */
@@ -24,26 +24,12 @@
 #include "utility.h"
 #include "angle_calculate.h"
 #include "pid.h"
-
-typedef enum {
-        STOP,      /*IN1 = 0 IN2 = 0*/
-        FORWARD,   /*IN1 = 0 IN2 = 1*/
-        BACKWARD   /*IN1 = 1 IN2 = 0*/
-} direction_t;
-
-typedef struct motor{
-        direction_t direction;
-        uint8_t in1;    /* GPIO for driving motor direction*/
-        uint8_t in2;    /* GPIO for driving motor direction*/
-        uint8_t pwm_channel;
-        uint8_t duty_cycle;
-}motor_t;
+#include "motor.h"
 
 typedef struct robot {
         float current_angle;
         motor_t motor_left;
         motor_t motor_right;
-        uint8_t enable_pin;
         PID_t pid;
         bool state;
 }robot_t;
