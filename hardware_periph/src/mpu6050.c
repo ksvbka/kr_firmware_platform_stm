@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:33:44
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-24 09:34:11
+* @Last Modified time: 2017-01-08 00:52:48
 */
 
 #include "mpu6050.h"
@@ -222,26 +222,26 @@
 
 
 /* Off set value to calibrate Acc*/
-static int16_t acc_offsetX = 106;
-static int16_t acc_offsetY = -219;
-static int16_t acc_offsetZ = -47;
+static int16_t acc_offsetX = 1733;
+static int16_t acc_offsetY = 509;
+static int16_t acc_offsetZ = 338;
 
 /*Offset value to calibrate Gyro */
-static int16_t gyro_offsetX = 0;
-static int16_t gyro_offsetY = 1;
-static int16_t gyro_offsetZ = -18;
+static int16_t gyro_offsetX = -165;
+static int16_t gyro_offsetY = 84;
+static int16_t gyro_offsetZ = -150;
 
 /* Scale Value config for ACC - default is 2G*/
-float g_acc_scale  = SCALED_ACC_2G;
+double g_acc_scale  = SCALED_ACC_2G;
 
-/* Scale Value config for GYRO - default is 2G*/
-float g_gyro_scale = SCALED_GYRO_250;
+/* Scale Value config for GYRO - default is 250*/
+double g_gyro_scale = SCALED_GYRO_250;
 
 
 void mpu6050_init(uint8_t acc_scale_config, uint8_t gyro_scale_config)
 {
         /* Disable FSync, 256Hz DLPF*/
-        i2c_write_byte(MPU6050_ADDRESS, MPU6050_CONFIG, DLPF_CFG_BAND_WIDTH_44HZ);
+        i2c_write_byte(MPU6050_ADDRESS, MPU6050_CONFIG, DLPF_CFG_BAND_WIDTH_260HZ);
 
         /* Config Accel*/
         uint8_t acc_config;
@@ -270,19 +270,19 @@ void mpu6050_init(uint8_t acc_scale_config, uint8_t gyro_scale_config)
         switch (gyro_scale_config) {
         case GYRO_CONFIG_250:
                 g_gyro_scale  =  SCALED_GYRO_250;
-                gyro_config   =   PS_SEL_SCALE_250;
+                gyro_config   =  PS_SEL_SCALE_250;
                 break;
         case GYRO_CONFIG_500:
                 g_gyro_scale  =  SCALED_GYRO_500;
-                gyro_config   =   PS_SEL_SCALE_500;
+                gyro_config   =  PS_SEL_SCALE_500;
                 break;
         case GYRO_CONFIG_1000:
                 g_gyro_scale  =  SCALED_GYRO_1000;
-                gyro_config   =   PS_SEL_SCALE_1000;
+                gyro_config   =  PS_SEL_SCALE_1000;
                 break;
         case GYRO_CONFIG_2000:
                 g_gyro_scale  =  SCALED_GYRO_2000;
-                gyro_config   =   PS_SEL_SCALE_2000;
+                gyro_config   =  PS_SEL_SCALE_2000;
                 break;
         }
         /* I2C_WriteByte(gyro_config, MPU6050_ADDRESS, MPU6050_GYRO_CONFIG);*/
@@ -303,18 +303,17 @@ void mpu6050_get_rawdata(mpu_raw_data_t* data)
         i2c_read_data(MPU6050_ADDRESS, MPU6050_ACCEL_XOUT_H, buff, 14);
 
         /* Acc raw data */
-        data->ax   = unsignedToSigned(buff[0]  << 8 | buff[1]) - acc_offsetX;
-        data->ay   = unsignedToSigned(buff[2]  << 8 | buff[3]) - acc_offsetY;
-        data->az   = unsignedToSigned(buff[4]  << 8 | buff[5]) - acc_offsetZ;
+        data->ax   = (buff[0]  << 8 | buff[1]) - acc_offsetX;
+        data->ay   = (buff[2]  << 8 | buff[3]) - acc_offsetY;
+        data->az   = (buff[4]  << 8 | buff[5]) - acc_offsetZ;
 
         /* Temparature */
-        data->temp = unsignedToSigned(buff[6]  << 8 | buff[7]);
+        data->temp = (buff[6]  << 8 | buff[7]);
 
         /* Gyro raw data */
-        data->gx   = unsignedToSigned(buff[8]  << 8 | buff[9])  - gyro_offsetX;
-        data->gy   = unsignedToSigned(buff[10] << 8 | buff[11]) - gyro_offsetY;
-        data->gz   = unsignedToSigned(buff[12] << 8 | buff[13]) - gyro_offsetZ;
-
+        data->gx   = (buff[8]  << 8 | buff[9])  - gyro_offsetX;
+        data->gy   = (buff[10] << 8 | buff[11]) - gyro_offsetY;
+        data->gz   = (buff[12] << 8 | buff[13]) - gyro_offsetZ;
 }
 
 void mpu6050_get_acc_data(acc_data_t* data)
@@ -322,9 +321,9 @@ void mpu6050_get_acc_data(acc_data_t* data)
         mpu_raw_data_t raw_data;
         mpu6050_get_rawdata(&raw_data);
 
-        data->x = (float)raw_data.ax / g_acc_scale;
-        data->y = (float)raw_data.ay / g_acc_scale;
-        data->z = (float)raw_data.az / g_acc_scale;
+        data->x = raw_data.ax / g_acc_scale;
+        data->y = raw_data.ay / g_acc_scale;
+        data->z = raw_data.az / g_acc_scale;
 }
 
 void mpu6050_get_gyro_data(gyro_data_t* data)
@@ -332,9 +331,9 @@ void mpu6050_get_gyro_data(gyro_data_t* data)
         mpu_raw_data_t raw_data;
         mpu6050_get_rawdata(&raw_data);
 
-        data->x = (float)raw_data.gx / g_gyro_scale;
-        data->y = (float)raw_data.gy / g_gyro_scale;
-        data->z = (float)raw_data.gz / g_gyro_scale;
+        data->x = raw_data.gx / g_gyro_scale;
+        data->y = raw_data.gy / g_gyro_scale;
+        data->z = raw_data.gz / g_gyro_scale;
 }
 
 /* Helper function: get mean of sensor value and store to buffer*/

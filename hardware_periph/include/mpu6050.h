@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:33:44
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-21 23:41:26
+* @Last Modified time: 2017-01-07 13:51:56
 */
 
 #ifndef __MPU6050__H__
@@ -33,16 +33,16 @@ typedef struct mpu_raw_data {
 
 
 typedef struct acc_data {
-        float x; /* rad/s*/
-        float y; /* rad/s*/
-        float z; /* rad/s*/
+        double x; /* rad/s*/
+        double y; /* rad/s*/
+        double z; /* rad/s*/
 } acc_data_t;
 
 
 typedef struct gryro_data {
-        float x; /* m/s^2*/
-        float y; /* m/s^2*/
-        float z; /* m/s^2*/
+        double x; /* m/s^2*/
+        double y; /* m/s^2*/
+        double z; /* m/s^2*/
 
 } gyro_data_t;
 

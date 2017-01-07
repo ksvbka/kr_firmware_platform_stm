@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-12-21 23:33:50
-* @Last Modified by:   Kienltb
-* @Last Modified time: 2016-12-22 17:29:15
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2017-01-08 01:36:48
 */
 
 /* Implement angle calculate from data of acc and gyro */
@@ -15,40 +15,40 @@
 
 /* Euler angle in degre*/
 typedef struct angle {
-        float x;
-        float y;
-        float z;
+        double roll;
+        double pitch;
+        double yaw;
 }angle_t;
 
 /* Kalman filter for MPU6050*/
 typedef struct kalman
 {
-        float Q_angle; // Process noise
-        float Q_gyroBias;
-        float R; // Measurement nois
+        double Q_angle; // Process noise
+        double Q_gyroBias;
+        double R; // Measurement nois
 
         /* State of system*/
-        float x_angle; // Angle state
-        float x_bias;  // Bias state
+        double x_angle; // Angle state
+        double x_bias;  // Bias state
 
         /* Estimation error covariance */
-        float P_00, P_01, P_10, P_11;
+        double P_00, P_01, P_10, P_11;
 
         /* Kalman gain*/
-        float K_0, K_1;
+        double K_0, K_1;
 
 }kalman_t;
 
-void angle_complementary_getvalue( angle_t* pAngle, float sample_time);
+void angle_complementary_getvalue( angle_t* pAngle, double sample_time);
 
-void angle_kalman_init(kalman_t* kalman);
+// void angle_kalman_init(kalman_t* kalman);
 
-/* Return roll angle - using kalman filter */
-float angle_kalman_getvalue(kalman_t* pKalman, float new_angle, float new_rate, float sample_time);
+// /* Return roll angle - using kalman filter */
+// float angle_kalman_getvalue(kalman_t* pKalman, float new_angle, float new_rate, float sample_time);
 
-void angle_AHRS_getvalue(angle_t* pAngle, float sample_time);
+void angle_AHRS_getvalue(angle_t* pAngle/*, float sample_time*/);
 
 /* Return roll angle - using kalman AHRS filter */
-float angle_AHRS_get_roll(float sample_time);
+// float angle_AHRS_get_roll(float sample_time);
 
 #endif //__ANGLE_CAL_H__
