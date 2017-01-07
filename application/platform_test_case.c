@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-30 22:30:36
 * @Last Modified by:   Kienltb
-* @Last Modified time: 2016-12-23 10:21:34
+* @Last Modified time: 2016-12-27 10:51:08
 */
 
 #include "platform_test_case.h"
@@ -182,7 +182,7 @@ void timer_hw_test(void)
 {
     timer_hw_init();
     uart_printf("\nTesting Timer_HW, increate ticks each 10ms in 5s");
-    timer_hw_start(10000, task); /* 10000us = 10ms*/
+    timer_hw_start(10000, task, NULL); /* 10000us = 10ms*/
     timer_create(SECOND_TIMER_ONE_TIME, 5, timer_hw_stop, NULL);
 }
 
