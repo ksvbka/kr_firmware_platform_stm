@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-21 23:33:50
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2017-01-08 01:36:48
+* @Last Modified time: 2017-01-08 11:04:48
 */
 
 /* Implement angle calculate from data of acc and gyro */
@@ -23,13 +23,13 @@ typedef struct angle {
 /* Kalman filter for MPU6050*/
 typedef struct kalman
 {
-        double Q_angle; // Process noise
-        double Q_gyroBias;
-        double R; // Measurement nois
+        double Q_angle;         /*Process noise*/
+        double Q_bias;
+        double R;               /*Measurement nois*/
 
         /* State of system*/
-        double x_angle; // Angle state
-        double x_bias;  // Bias state
+        double x_angle;         /*Angle state*/
+        double x_bias;          /* Bias state*/
 
         /* Estimation error covariance */
         double P_00, P_01, P_10, P_11;
@@ -41,10 +41,7 @@ typedef struct kalman
 
 void angle_complementary_getvalue( angle_t* pAngle, double sample_time);
 
-// void angle_kalman_init(kalman_t* kalman);
-
-// /* Return roll angle - using kalman filter */
-// float angle_kalman_getvalue(kalman_t* pKalman, float new_angle, float new_rate, float sample_time);
+void angle_kalman_getvalue(angle_t* pAngle, double sample_time);
 
 void angle_AHRS_getvalue(angle_t* pAngle/*, float sample_time*/);
 
