@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-21 23:34:13
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2017-01-08 16:29:17
+* @Last Modified time: 2017-01-08 16:35:19
 */
 
 #include "angle_calculate.h"
@@ -185,18 +185,18 @@ void angle_AHRS_getvalue(angle_t* pAngle, double sample_time)
 
         MadgwickAHRSupdateIMU(gyro_x, gyro_y, gyro_z, acc_data.x, acc_data.y, acc_data.z);
 
-        double graviti0 = 2.0 * (q1*q3 - q0*q2);
-        double graviti1 = 2.0 * (q0*q1 + q2*q3);
-        double graviti2 = 2.0 * (q0*q0 - q1*q1 - q2*q2 + q3*q3);
+        double graviti0 = 2.0 * (q1 * q3 - q0 * q2);
+        double graviti1 = 2.0 * (q0 * q1 + q2 * q3);
+        double graviti2 = 2.0 * (q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3);
 
-        pAngle->roll  = atan2(2*q1*q2 - 2*q0*q3, 2*q0*q0 + 2*q1*q1 -1 ) * RAD_TO_DEG;
-        pAngle->pitch = atan(graviti0/sqrt(graviti1 * graviti1 + graviti2 * graviti2)) * RAD_TO_DEG;
-        pAngle->yaw   = atan(graviti1/sqrt(graviti1 * graviti1 + graviti2 * graviti2)) * RAD_TO_DEG;
+        pAngle->roll  = atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0 * q0 + 2 * q1 * q1 - 1 ) * RAD_TO_DEG;
+        pAngle->pitch = atan(graviti0 / sqrt(graviti1 * graviti1 + graviti2 * graviti2)) * RAD_TO_DEG;
+        pAngle->yaw   = atan(graviti1 / sqrt(graviti1 * graviti1 + graviti2 * graviti2)) * RAD_TO_DEG;
 
         // double euler_x = atan2(2.0 * (q2 * q3 + q0 * q1), q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3) * RAD_TO_DEG;
         // double euler_y = asinf(-2.0f * (q1 * q3 - q0 * q2)) * RAD_TO_DEG;
         // double euler_z = atan2(2.0 * (q1 * q2 + q0 * q3), q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3) * RAD_TO_DEG;
 
         /* Test */
-        uart_printf("\n%f\t %f\t %f\t", pAngle->roll, pAngle->pitch, pAngle->yaw);
+        // uart_printf("\n%f\t %f\t %f\t", pAngle->roll, pAngle->pitch, pAngle->yaw);
 }
