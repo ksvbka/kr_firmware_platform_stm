@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-21 23:33:50
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2017-01-08 11:04:48
+* @Last Modified time: 2017-01-08 14:54:41
 */
 
 /* Implement angle calculate from data of acc and gyro */
@@ -43,7 +43,7 @@ void angle_complementary_getvalue( angle_t* pAngle, double sample_time);
 
 void angle_kalman_getvalue(angle_t* pAngle, double sample_time);
 
-void angle_AHRS_getvalue(angle_t* pAngle/*, float sample_time*/);
+void angle_AHRS_getvalue(angle_t* pAngle , double sample_time);
 
 /* Return roll angle - using kalman AHRS filter */
 // float angle_AHRS_get_roll(float sample_time);

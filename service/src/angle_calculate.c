@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-21 23:34:13
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2017-01-08 14:51:17
+* @Last Modified time: 2017-01-08 16:29:17
 */
 
 #include "angle_calculate.h"
@@ -60,6 +60,10 @@ void angle_complementary_getvalue( angle_t* pAngle, double dt)
 static void kalman_init(kalman_t* kalman);
 static double kalman_calculate(kalman_t* pKalman, double new_angle, double new_rate, double dt);
 
+
+/*TODO:
+        Need to fix issue of slow calculate
+*/
 void angle_kalman_getvalue(angle_t* pAngle, double sample_time)
 {
         /* Using kalman filter */
@@ -161,13 +165,15 @@ double kalman_calculate(kalman_t* pKalman, double new_angle, double new_rate, do
         return   pKalman->x_angle;
 }
 
+/*TODO:
+        Need to fix issue of slow calculate
+*/
+
 /* NOTE: Adjust sample time in MadgwickAHRS.c to get correct value of angle*/
-void angle_AHRS_getvalue(angle_t* pAngle/*, float sample_time*/)
+void angle_AHRS_getvalue(angle_t* pAngle, double sample_time)
 {
         acc_data_t acc_data;
         gyro_data_t gyro_data;
-
-        angle_t current_angle;
 
         mpu6050_get_acc_data(&acc_data);
         mpu6050_get_gyro_data(&gyro_data);
@@ -179,9 +185,17 @@ void angle_AHRS_getvalue(angle_t* pAngle/*, float sample_time*/)
 
         MadgwickAHRSupdateIMU(gyro_x, gyro_y, gyro_z, acc_data.x, acc_data.y, acc_data.z);
 
-        pAngle->roll  = atan2(2.0 * (q2 * q3 + q0 * q1), q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3) * RAD_TO_DEG;
-        pAngle->pitch = asinf(-2.0f * (q1 * q3 - q0 * q2)) * RAD_TO_DEG;
-        pAngle->yaw   = atan2(2.0 * (q1 * q2 + q0 * q3), q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3) * RAD_TO_DEG;
+        double graviti0 = 2.0 * (q1*q3 - q0*q2);
+        double graviti1 = 2.0 * (q0*q1 + q2*q3);
+        double graviti2 = 2.0 * (q0*q0 - q1*q1 - q2*q2 + q3*q3);
+
+        pAngle->roll  = atan2(2*q1*q2 - 2*q0*q3, 2*q0*q0 + 2*q1*q1 -1 ) * RAD_TO_DEG;
+        pAngle->pitch = atan(graviti0/sqrt(graviti1 * graviti1 + graviti2 * graviti2)) * RAD_TO_DEG;
+        pAngle->yaw   = atan(graviti1/sqrt(graviti1 * graviti1 + graviti2 * graviti2)) * RAD_TO_DEG;
+
+        // double euler_x = atan2(2.0 * (q2 * q3 + q0 * q1), q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3) * RAD_TO_DEG;
+        // double euler_y = asinf(-2.0f * (q1 * q3 - q0 * q2)) * RAD_TO_DEG;
+        // double euler_z = atan2(2.0 * (q1 * q2 + q0 * q3), q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3) * RAD_TO_DEG;
 
         /* Test */
         uart_printf("\n%f\t %f\t %f\t", pAngle->roll, pAngle->pitch, pAngle->yaw);
