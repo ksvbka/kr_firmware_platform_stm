@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:43:01
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-21 21:21:14
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2017-01-09 16:17:39
 */
 
 #ifndef __ULTILITY_H__
@@ -18,6 +18,9 @@
 
 /* Convert String to Integer*/
 int to_int(char *s);
+
+/* Check the system is big endian for little endian. NOTE: need compiler support C99*/
+#define IS_BIG_ENDIAN (!*(unsigned char *)&(unsigned short){1})
 
 /* Convert an unsigned int to signed int*/
 int16_t unsignedToSigned(uint16_t val);
