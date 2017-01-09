@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:43:01
 * @Last Modified by:   Kienltb
-* @Last Modified time: 2017-01-09 16:31:58
+* @Last Modified time: 2017-01-09 16:32:51
 */
 
 #include "utility.h"
@@ -59,7 +59,7 @@ void float_to_buff(float data, char* buffer)
 }
 
 /* Convert a 4byte in buffer to float */
-float buffer_to_float(char* buffer)
+float buff_to_float(char* buffer)
 {
         return *(float*)buffer;
 }
