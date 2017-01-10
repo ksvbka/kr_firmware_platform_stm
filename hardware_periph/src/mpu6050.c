@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:33:44
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2017-01-09 21:39:36
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2017-01-10 16:55:47
 */
 
 #include "mpu6050.h"
@@ -188,10 +188,10 @@
 * 2       | +/- 8g           | 4096 LSB/mg
 * 3       | +/- 16g          | 2043 LSB/mg
 */
-#define SCALED_ACC_2G       16384.0
-#define SCALED_ACC_4G       8192.0
-#define SCALED_ACC_8G       4096.0
-#define SCALED_ACC_16G      2043.0
+#define SCALED_ACC_2G       16384.0f
+#define SCALED_ACC_4G       8192.0f
+#define SCALED_ACC_8G       4096.0f
+#define SCALED_ACC_16G      2043.0f
 
 /* FS_SEL | Full Scale Range   | LSB Sensitivity
 * -------+--------------------+----------------
@@ -200,10 +200,10 @@
 * 2      | +/- 1000 degrees/s | 32.8 LSB/deg/s
 * 3      | +/- 2000 degrees/s | 16.4 LSB/deg/s
 */
-#define SCALED_GYRO_250     131.0
-#define SCALED_GYRO_500     65.5
-#define SCALED_GYRO_1000    32.8
-#define SCALED_GYRO_2000    16.4
+#define SCALED_GYRO_250     131.0f
+#define SCALED_GYRO_500     65.5f
+#define SCALED_GYRO_1000    32.8f
+#define SCALED_GYRO_2000    16.4f
 
 /*
 *   Note:
@@ -232,10 +232,10 @@ static int16_t gyro_offsetY = 138;
 static int16_t gyro_offsetZ = -111;
 
 /* Scale Value config for ACC - default is 2G*/
-double g_acc_scale  = SCALED_ACC_2G;
+float g_acc_scale  = SCALED_ACC_2G;
 
 /* Scale Value config for GYRO - default is 250*/
-double g_gyro_scale = SCALED_GYRO_250;
+float g_gyro_scale = SCALED_GYRO_250;
 
 
 void mpu6050_init(uint8_t acc_scale_config, uint8_t gyro_scale_config)

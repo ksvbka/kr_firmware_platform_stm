@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-11 23:29:12
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-28 23:30:24
+* @Last Modified time: 2017-01-08 17:08:04
 */
 
 /* Implement 2 wheels Blance robot project */
@@ -31,6 +31,7 @@ typedef struct robot {
         motor_t motor_left;
         motor_t motor_right;
         PID_t pid;
+        uint8_t button;
         bool state;
 }robot_t;
 

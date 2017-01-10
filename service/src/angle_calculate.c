@@ -2,24 +2,24 @@
 * @Author: Trung Kien
 * @Date:   2016-12-21 23:34:13
 * @Last Modified by:   Kienltb
-* @Last Modified time: 2017-01-10 16:23:27
+* @Last Modified time: 2017-01-10 16:57:59
 */
 
 #include "angle_calculate.h"
 #include "math.h" /* For sqrt and atan2*/
 
 /* Scale Value config for ACC of mpu6050*/
-extern double g_acc_scale;
+extern float g_acc_scale;
 
 /* Scale Value config for GYRO of mpu6050*/
-extern double g_gyro_scale;
+extern float g_gyro_scale;
 
-#define RAD_TO_DEG (57.296)
-#define DEG_TO_RAD (0.01745)
+#define RAD_TO_DEG (57.296f)
+#define DEG_TO_RAD (0.01745f)
 
 extern float invSqrt(float x);
 
-void angle_complementary_getvalue( angle_t* pAngle, double dt)
+void angle_complementary_getvalue( angle_t* pAngle, float dt)
 {
         mpu_raw_data_t imu_data;
         mpu6050_get_rawdata(&imu_data);
@@ -29,11 +29,11 @@ void angle_complementary_getvalue( angle_t* pAngle, double dt)
         // It is then converted from radians to degrees
 
         // use RESTRICT_PITCH => use Eq. 25 and 26
-        double roll  = atan2(imu_data.ay, imu_data.az) * RAD_TO_DEG;
-        double pitch = atan(-imu_data.ax / sqrt(imu_data.ay * imu_data.ay + imu_data.az * imu_data.az)) * RAD_TO_DEG;
+        float roll  = atan2(imu_data.ay, imu_data.az) * RAD_TO_DEG;
+        float pitch = atan(-imu_data.ax / sqrt(imu_data.ay * imu_data.ay + imu_data.az * imu_data.az)) * RAD_TO_DEG;
 
-        double gyro_xrate = imu_data.gx / g_gyro_scale; /* Convert to deg/s*/
-        double gyro_yrate = imu_data.gy / g_gyro_scale; /* Convert to deg/s*/
+        float gyro_xrate = imu_data.gx / g_gyro_scale; /* Convert to deg/s*/
+        float gyro_yrate = imu_data.gy / g_gyro_scale; /* Convert to deg/s*/
 
         if (roll > 90 || roll < -90)
                 gyro_yrate = -gyro_yrate;
@@ -46,8 +46,8 @@ void angle_complementary_getvalue( angle_t* pAngle, double dt)
                 is_init++;
         } else {
                 /* Complement filter*/
-                pAngle->roll  = 0.93 * (pAngle->roll  + gyro_xrate * dt) + 0.07 * roll;
-                pAngle->pitch = 0.93 * (pAngle->pitch + gyro_yrate * dt) + 0.07 * pitch;
+                pAngle->roll  = 0.93f * (pAngle->roll  + gyro_xrate * dt) + 0.07f * roll;
+                pAngle->pitch = 0.93f * (pAngle->pitch + gyro_yrate * dt) + 0.07f * pitch;
         }
 
         /*FIX ME: Cannot calcutate z => fill 0*/
@@ -59,13 +59,13 @@ void angle_complementary_getvalue( angle_t* pAngle, double dt)
 
 /* Helper function */
 static void kalman_init(kalman_t* kalman);
-static double kalman_calculate(kalman_t* pKalman, double new_angle, double new_rate, double dt);
+static float kalman_calculate(kalman_t* pKalman, float new_angle, float new_rate, float dt);
 
 
 /*TODO:
         Need to fix issue of slow calculate
 */
-void angle_kalman_getvalue(angle_t* pAngle, double sample_time)
+void angle_kalman_getvalue(angle_t* pAngle, float sample_time)
 {
         /* Using kalman filter */
         static kalman_t kalman_roll;
@@ -74,11 +74,11 @@ void angle_kalman_getvalue(angle_t* pAngle, double sample_time)
         mpu_raw_data_t imu_data;
         mpu6050_get_rawdata(&imu_data);
 
-        double roll  = atan2(imu_data.ay, imu_data.az) * RAD_TO_DEG;
-        double pitch = atan(-imu_data.ax / sqrt(imu_data.ay * imu_data.ay + imu_data.az * imu_data.az)) * RAD_TO_DEG;
+        float roll  = atan2(imu_data.ay, imu_data.az) * RAD_TO_DEG;
+        float pitch = atan(-imu_data.ax / sqrt(imu_data.ay * imu_data.ay + imu_data.az * imu_data.az)) * RAD_TO_DEG;
 
-        double gyro_xrate = imu_data.gx / g_gyro_scale; /* Convert to deg/s*/
-        double gyro_yrate = imu_data.gy / g_gyro_scale; /* Convert to deg/s*/
+        float gyro_xrate = imu_data.gx / g_gyro_scale; /* Convert to deg/s*/
+        float gyro_yrate = imu_data.gy / g_gyro_scale; /* Convert to deg/s*/
 
         if (roll > 90 || roll < -90)
                 gyro_yrate = -gyro_yrate;
@@ -110,23 +110,23 @@ void angle_kalman_getvalue(angle_t* pAngle, double sample_time)
 void kalman_init(kalman_t* kalman)
 {
         /* Defaut value */
-        kalman->Q_angle     = 0.001;
-        kalman->Q_bias      = 0.003;
-        kalman->R           = 0.03;
+        kalman->Q_angle     = 0.001f;
+        kalman->Q_bias      = 0.003f;
+        kalman->R           = 0.03f;
 
-        kalman->x_angle = 0.0;
-        kalman->x_bias  = 0.0;
+        kalman->x_angle = 0.0f;
+        kalman->x_bias  = 0.0f;
 
-        kalman->P_00 = 0.0;
-        kalman->P_01 = 0.0;
-        kalman->P_10 = 0.0;
-        kalman->P_11 = 0.0;
+        kalman->P_00 = 0.0f;
+        kalman->P_01 = 0.0f;
+        kalman->P_10 = 0.0f;
+        kalman->P_11 = 0.0f;
 
-        kalman->K_0  = 0.0;
-        kalman->K_1  = 0.0;
+        kalman->K_0  = 0.0f;
+        kalman->K_1  = 0.0f;
 }
 
-double kalman_calculate(kalman_t* pKalman, double new_angle, double new_rate, double dt)
+float kalman_calculate(kalman_t* pKalman, float new_angle, float new_rate, float dt)
 {
         /* Update kalman*/
 
@@ -143,7 +143,7 @@ double kalman_calculate(kalman_t* pKalman, double new_angle, double new_rate, do
         // Discrete Kalman filter measurement update equations - Measurement Update ("Correct")
         // Calculate Kalman gain - Compute the Kalman gain
         /* Step 4 */
-        double S = pKalman->P_00 + pKalman->R; /* Estimate error*/
+        float S = pKalman->P_00 + pKalman->R; /* Estimate error*/
 
         /* Step 5 */
         pKalman->K_0 = pKalman->P_00 / S;
@@ -151,7 +151,7 @@ double kalman_calculate(kalman_t* pKalman, double new_angle, double new_rate, do
 
         // Calculate angle and bias - Update estimate with measurement zk (newAngle)
         /* Step 3 */
-        double y = new_angle - pKalman->x_angle;
+        float y = new_angle - pKalman->x_angle;
         /* Step 6 */
         pKalman->x_angle +=  pKalman->K_0 * y;
         pKalman->x_bias  +=  pKalman->K_1 * y;
@@ -182,7 +182,7 @@ static void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay,
 static void MadgwickAHRSupdateIMU(float gx, float gy, float gz, float ax, float ay, float az);
 float invSqrt(float x);
 
-void angle_AHRS_getvalue(angle_t* pAngle, double sample_time)
+void angle_AHRS_getvalue(angle_t* pAngle, float sample_time)
 {
         /*Init in the first time */
         static uint8_t is_init = 0;
@@ -196,9 +196,9 @@ void angle_AHRS_getvalue(angle_t* pAngle, double sample_time)
         mpu6050_get_gyro_data(&gyro_data);
 
         /* convert gyro readings into Radians per second*/
-        double gyro_x = gyro_data.x * DEG_TO_RAD;
-        double gyro_y = gyro_data.y * DEG_TO_RAD;
-        double gyro_z = gyro_data.z * DEG_TO_RAD;
+        float gyro_x = gyro_data.x * DEG_TO_RAD;
+        float gyro_y = gyro_data.y * DEG_TO_RAD;
+        float gyro_z = gyro_data.z * DEG_TO_RAD;
 
         MadgwickAHRSupdateIMU(gyro_x, gyro_y, gyro_z, acc_data.x, acc_data.y, acc_data.z);
 
