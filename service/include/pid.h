@@ -1,8 +1,8 @@
 /*
 * @Author: Kienltb
 * @Date:   2016-12-22 14:27:49
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-25 17:11:11
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2016-12-30 18:27:36
 */
 
 /**
@@ -24,8 +24,8 @@ typedef struct PID{
         float kd;
         float out_min;
         float out_max;
-        float last_input;
-        float error_accumulate;
+        float last_error;
+        float error_integral ;
         float sample_time; /*s*/
         bool  direction; /* PID_DIRECT or PID_REVERSE*/
 }PID_t;
