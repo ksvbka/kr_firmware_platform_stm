@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-12-21 23:33:50
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2017-01-08 16:34:38
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2017-01-10 12:16:41
 */
 
 /* Implement angle calculate from data of acc and gyro */
@@ -11,7 +11,7 @@
 #define __ANGLE_CAL_H__
 
 #include "mpu6050.h"
-#include "MadgwickAHRS.h" /* Filter Algorithm for IMU*/
+// #include "MadgwickAHRS.h" /* Filter Algorithm for IMU*/
 
 /* Euler angle in degre*/
 typedef struct angle {
