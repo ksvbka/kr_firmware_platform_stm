@@ -19,6 +19,14 @@ OPENOCD_BOARD_DIR=/usr/share/openocd/scripts/board
 # Configuration (cfg) file containing programming directives for OpenOCD
 OPENOCD_PROC_FILE=extra/stm32f0-openocd.cfg
 
+# Colour code for printing
+
+NC=\033[0m
+RED=\033[0;31m
+BLUE=\033[0;34m
+GREEN=\033[0;32m
+PURPLE=\033[0;35m
+
 ###################################################
 
 CFLAGS  = -Wall -g -std=c99 -Os
@@ -85,7 +93,7 @@ lib:
 proj: 	$(BIN_DIR)/$(PROJ_NAME).elf
 
 $(OUT).elf : $(OBJ_HW) $(OBJ_PER) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
-	@echo Lingking ...
+	@echo "$(RED)Lingking ...$(NC)"
 	@mkdir -p $(BIN_DIR)
 	@$(CC) $(CFLAGS) $^ -o $@ -L$(STD_PERIPH_LIB) -lstm32f0 -L$(LDSCRIPT_INC) -Tstm32f0.ld -lm #add lm for math.h
 
@@ -93,34 +101,34 @@ $(OUT).elf : $(OBJ_HW) $(OBJ_PER) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
 	@$(OBJCOPY) -O binary $(OUT).elf $(BIN_DIR)/$(PROJ_NAME).bin
 	@$(OBJDUMP) -St $(OUT).elf >$(BIN_DIR)/$(PROJ_NAME).lst
 	$(SIZE) $(OUT).elf
-	@echo Successful!
+	@echo "$(RED)Successful! $(NC)"
 
 $(OBJ_DIR)/%.o:$(SRC_STARTUP_DIR)/%.s
-	@echo Building $(notdir $<) ...
+	@echo  "$(GREEN)Building $(notdir $<)...$(NC)"
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Bulding hardware object
 $(OBJ_DIR)/%.o:$(SRC_HWDIR)/%.c
-	@echo Building $(notdir $<) ...
+	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Bulding peripherals object
 $(OBJ_DIR)/%.o:$(SRC_PERDIR)/%.c
-	@echo Building $(notdir $<) ...
+	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Bulding service object
 $(OBJ_DIR)/%.o:$(SRC_SVDIR)/%.c
-	@echo Building $(notdir $<) ...
+	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Bulding application object
 $(OBJ_DIR)/%.o:$(SRC_APPDIR)/%.c
-	@echo Building $(notdir $<) ...
+	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
