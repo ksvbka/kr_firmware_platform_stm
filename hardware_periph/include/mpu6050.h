@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:33:44
 * @Last Modified by:   Kienltb
-* @Last Modified time: 2017-01-10 16:54:59
+* @Last Modified time: 2017-01-11 16:48:08
 */
 
 #ifndef __MPU6050__H__

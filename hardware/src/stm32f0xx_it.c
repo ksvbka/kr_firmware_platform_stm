@@ -99,6 +99,7 @@ void PendSV_Handler(void)
   * @param  None
   * @retval None
   */
+extern void sys_tick_irq_handler(void);
 void SysTick_Handler(void)
 {
     /*Kr*/
@@ -124,35 +125,43 @@ void SysTick_Handler(void)
 /**
   * @}
   */
+extern void gpio_irq_exti0_1_handler(void);
 void EXTI0_1_IRQHandler(void)
 {
     gpio_irq_exti0_1_handler();
 }
 
+extern void gpio_irq_exti2_3_handler(void);
 void EXTI2_3_IRQHandler(void)
 {
     gpio_irq_exti2_3_handler();
 }
+
+extern void gpio_irq_exti4_15_handler(void);
 void EXTI4_15_IRQHandler(void)
 {
     gpio_irq_exti4_15_handler();
 }
 
+extern void uart_irq_handler(void);
 void USART1_IRQHandler(void)
 {
     uart_irq_handler();
 }
 
+extern void uart_irq_handler(void);
 void USART2_IRQHandler(void)
 {
     uart_irq_handler();
 }
 
+extern void adc_irq_handler(void);
 void ADC1_COMP_IRQHandler(void)
 {
     adc_irq_handler();
 }
 
+extern void timer_hw_irq_handler(void);
 void TIM3_IRQHandler(void) {
     timer_hw_irq_handler();
 }

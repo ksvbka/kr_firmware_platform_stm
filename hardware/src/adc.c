@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:36:28
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-12 00:39:26
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2017-01-11 16:32:02
 */
 
 #include "stm32f0xx.h"
@@ -10,7 +10,6 @@
 #include "gpio.h"
 
 static callback g_adc_irq_callback = NULL;
-static uint8_t  g_adc_mode = 0;
 
 /* Helper function*/
 

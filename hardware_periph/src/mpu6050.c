@@ -2,13 +2,15 @@
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:33:44
 * @Last Modified by:   Kienltb
-* @Last Modified time: 2017-01-10 16:55:47
+* @Last Modified time: 2017-01-11 16:48:46
 */
 
 #include "mpu6050.h"
 #include "i2c.h"
-
 #include "utility.h"
+
+/*Debug*/
+#include "uart.h"
 
 /* Register define */
 
@@ -237,6 +239,7 @@ float g_acc_scale  = SCALED_ACC_2G;
 /* Scale Value config for GYRO - default is 250*/
 float g_gyro_scale = SCALED_GYRO_250;
 
+extern void delay_ms(uint32_t time_ms);
 
 void mpu6050_init(uint8_t acc_scale_config, uint8_t gyro_scale_config)
 {

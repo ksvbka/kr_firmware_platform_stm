@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-12-11 23:28:56
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-17 08:07:12
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2017-01-11 16:30:01
 */
 
 #ifndef __GPIO_H__
@@ -72,6 +72,8 @@
 #define NO_PULL         GPIO_PuPd_NOPULL
 #define PULL_UP         GPIO_PuPd_UP
 #define PULL_DOWN       GPIO_PuPd_DOWN
+
+void gpio_module_init(uint8_t port_enable);
 
 bool gpio_init(uint8_t pin, uint8_t mode);
 
