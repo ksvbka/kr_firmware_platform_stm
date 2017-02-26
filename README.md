@@ -1,54 +1,92 @@
-#STM32F0-Discovery Application Template
-This package is for use when compiling programs for STM32F05xx ARM microcontrollers using arm-none-eabi-gcc (I'm using the [Code Sourcery G++:Lite Edition](http://www.mentor.com/embedded-software/sourcery-tools/sourcery-codebench/editions/lite-edition/) toolchain). The Makefile in the main directory will call the Make file in the Libraries directory, thereby automatically building the STM peripheral library. However, running 'make clean' will not affect the peripherals library (the same command can be run from the Libraries directory to do this).
+# Kr Firmware framework
+> frame work cho lập trình các ứng dụng embedded, tối ưu hóa việc sử dụng lại khi thay đổi nền tảng hardware
 
-This template will serve as a quick-start for those who do not wish to use an IDE, but rather develop in a text editor of choice and build from the command line. It is based on [an example template for the F4 Discovery board](http://jeremyherbert.net/get/stm32f4_getting_started) put together by Jeremy Herbert.
+[![NPM Version][npm-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
+[![Downloads Stats][npm-downloads]][npm-url]
 
-##Subfolders:
+Vấn đề trong việc phát triển phần mềm cho embedded system là việc phụ thuộc vào phần cứng. Mỗi chip của các hãng khác nhau lại có những thư viện riêng, do đó khi thay đổi nền tảng phần cứng  sẽ rất khó khăn trong việc sử dụng lại. Do đó, yêu cầu phải đưa ra một kiến trúc phần mềm phù hợp, chia chương trình thành những tầng có chức năng riêng biệt, dễ quản lý, bảo trì soát lỗi. Hơn nữa nó tối ưu hóa tính sử dụng lại của chương trình khi thay đổi nền tảng phần cứng.
 
-1. Library/
-   * This is the Library/ folder from the STM32F0xx_StdPeriph_Lib_V1.0.0 standard peripheral driver library produced by STM. This preserves the original structure which should make it easy to roll in library upgrades as they are published
-   * **Makefile** is not part of the STM release, and must be copied over if the library is upgraded.
-   * **stm32f0xx_conf.h** is used to configure the peripheral library. It must be copied here if the library is upgraded. The file was file taken from the STM32F0-Discovery firmware package. It is found in the following directory:
-      * Project/Demonstration/
-   * **Abstracting the libraries:** You may place this folder anywhere you like in order to use it for multiple projects. Just change the path of the STD_PERIPH_LIB variable in the Makefile
+Kiến trúc phần mềm được đưa ra gồm 3 tầng như sau
 
-2. Device/
-   * Folder contains device specific files:
-   * **startup_stm32f0xx.s** is the startup file taken from the STM32F0-Discovery firmware package. It is found in the following directory:
-      * Libraries/CMSIS/ST/STM32F0xx/Source/Templates/TrueSTUDIO/
-   * Linker Scripts (Device/ldscripts)
-      * These linker scripts are used instead of the stm32_flash.ld script which is included in the STM demo code. This is because the original file contains an unreasonably restrictive copyright assertion.
+* Hardware: Chứa các phần source code riêng biệt cho từng nền tảng phần cứng và không thể thay đổi theo ý người phát triển. Các source code này thường được cung cấp bởi hãng cung cấp giải pháp dưới dạng các driver cho chức năng cơ bản GPIO, UART, Timer, I2C..., tóm lại  nó dùng để thiết lập các chế độ hoạt động của từng nền tảng phần cứng.
 
-3. inc/
-   * All include files for this particular project.
+* Service: Chứa các phần source code được trừu tượng hóa, cài đặt các thuật toán nâng cao và không phụ thuộc phần cứng. Đây là phần chuyển tiếp giữa tầng dưới (Hardware) và tầng ứng dụng. Nó sử dụng các hàm từ tầng Hardware và đưa ra các API cho tầng ứng dụng.
 
-4. src/
-   * All source files for this particular project (including main.c).
-   * **system_stm32f0xx.c** can be generated using an XLS file developed by STM. This sets up the system clock values for the project. The file included in this repository is taken from the STM32F0-Discovery firmware package. It is found in the following directory:
-      * Libraries/CMSIS/ST/STM32F0xx/Source/Templates/
+* Application:  Chứa phần cài đặt cho từng ứng dụng cụ thể, tầng này sử dụng các API từ tầng Translation và hạn chế truy cập trực tiếp phần cứng.
 
-5. extra/
-   * This contains a procedure file used to write the image to the board via OpenOCD
-   * **Abstracting the extra folder:** the .cfg file in the extra folder may be placed anywhere so that multiple projects can use one file. Just change the OPENOCD_PROC_FILE variable in the Make file to match the new location.
+![](doc/firmware_architecture.png)
 
-##Loading the image on the board
+Nếu cài đặt đúng theo kiến trúc như trên, khi chuyển đổi nền tảng phần cứng ta sẽ tối ưu sử dụng lại source code mà không phải viết lại từ đầu.
+* Tầng Hardware do phụ thuộc hoàn toàn đối với từng nền tảng nên sẽ bị thay thế bằng nền tảng mới.
+* Tầng  Service sẽ được chỉnh sửa lại cho phù hợp với nền tảng mới (thêm bớt modue so với nền tảng cũ).
+* Tầng Application có thể giữ nguyên.
 
-If you have OpenOCD installed 'make program' can be used to flash the .bin file to the board. OpenOCD must be installed with stlink enabled. Clone [the git repository](http://openocd.git.sourceforge.net/git/gitweb.cgi?p=openocd/openocd;a=summary) and use these commands to compile/install it:
+## Installation
 
-    ./bootstrap
-    ./configure --prefix=/usr --enable-maintainer-mode --enable-stlink
-    make 
-    sudo make install
+Dùng gcc để build cho các dòng arm. Để cài đặt có thể dùng lệnh với ubuntu như sau
 
-If there is an error finding the .cfg file, please double-check the OPENOCD_BOARD_DIR constant at the top of the Makefile (in this template directory, not in OpenOCD).
+```sh
+apt-get install gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi
+```
+Kiểm tra bằng lệnh
 
-###UDEV Rule for the Discovery Board
+```sh
+arm-none-eabi-gcc --version
+```
 
-If you are not able to communicate with the STM32F0-Discovery board without root privileges you should follow the step from [the stlink repo readme file](https://github.com/texane/stlink#readme) for adding a udev rule for this hardware.
+Do project demo cài đặt cho dòng STM32F0 nên có thể setup môi trường theo hướng dẫn ở link sau
+[STM32F0-Discovery Application Template]:https://github.com/szczys/stm32f0-discovery-basic-template
 
-##Compiling your own toolchain
-It might be best to use a precompiled toolchain liked CodeSourcery G++: Lite Edition. But if you would prefer to compile your own, give [this guide](http://www.kunen.org/uC/gnu_tool.html) (link dead, [try the Internet Archive](https://web.archive.org/web/20140802120713/http://www.kunen.org/uC/gnu_tool.html))a try. Just google for the source code to make sure you're using the most recent versions. GCC now comes with the core and g++ code all in one archive.
+Build project theo make file kèm theo project
 
-###Possible compiling errors:
-   * You may encouter unfulfilled dependecies when it comes to GMP, MPFR and MPC. According to [the GCC installation Wiki](http://gcc.gnu.org/wiki/InstallingGCC) you should install the following packages: libgmp-dev libmpfr-dev libmpc-dev. If that doesn't work, read the linked Wiki for further options.
-   * If you get the error: "configure: error: Link tests are not allowed after GCC_NO_EXECUTABLES" try adding the following flags when configuring GCC: "--with-system-zlib --disable-shared"
+## Usage example
+
+Tầng hardware đã được cài đặt theo interface chung, do đó ta có thể sử dụng lại mà không cần  chỉnh sửa. Ví dụ phần test sau sử dụng chung cho cả test board MSP430 và STM32F0
+
+```sh
+/*Test io*/
+
+#define PRESS_BUTTON (10) // press button event
+
+uint8_t LED_GREEN  = GPIO_PIN(GPIO_PC, 9);
+uint8_t LED_BLUE   = GPIO_PIN(GPIO_PC, 8);
+uint8_t BUTTON     = GPIO_PIN(GPIO_PA, 0);
+
+void pulse_led(void* param);
+
+void button_press_cb(void* param);
+
+void gpio_test(void)
+{
+    uart_printf("\nTesting io ...");
+    gpio_init(LED_GREEN, GPIO_OUT);
+    gpio_init(LED_BLUE, GPIO_OUT);
+
+    g_test_ok = FALSE;
+    uart_printf("\n    Turning on LED_BLUE...");
+    delay_ms(500);
+    gpio_set(LED_BLUE);
+    uart_printf("\n    Please get_confirm (press 'y')...");
+    while (!g_test_ok);
+
+    g_test_ok = FALSE;
+    uart_printf("\n    Registing button to toggle LED_GREEN ...");
+    gpio_init_irq(BUTTON, GPIO_FALLING);
+    gpio_irq_register_callback(button_press_cb);
+    delay_ms(500);
+    uart_printf("\n    Please get_confirm (press 'y')...");
+    while (!g_test_ok);
+
+    uart_printf("\n    io function is ok :D");
+}
+```
+## Release History
+* 0.0.1
+    * Work in progress
+
+## Meta
+
+KienLTb – letrungkien.k53.hut@gmail.com
+
+Distributed under the MIT license.
