@@ -1,9 +1,5 @@
 # Kr Firmware framework
-> frame work cho lập trình các ứng dụng embedded, tối ưu hóa việc sử dụng lại khi thay đổi nền tảng hardware
-
-[![NPM Version][npm-image]][npm-url]
-[![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
+> framework cho lập trình các ứng dụng embedded, tối ưu hóa việc sử dụng lại khi thay đổi nền tảng hardware
 
 Vấn đề trong việc phát triển phần mềm cho embedded system là việc phụ thuộc vào phần cứng. Mỗi chip của các hãng khác nhau lại có những thư viện riêng, do đó khi thay đổi nền tảng phần cứng  sẽ rất khó khăn trong việc sử dụng lại. Do đó, yêu cầu phải đưa ra một kiến trúc phần mềm phù hợp, chia chương trình thành những tầng có chức năng riêng biệt, dễ quản lý, bảo trì soát lỗi. Hơn nữa nó tối ưu hóa tính sử dụng lại của chương trình khi thay đổi nền tảng phần cứng.
 
