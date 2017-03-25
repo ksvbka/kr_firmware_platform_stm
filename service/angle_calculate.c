@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-21 23:34:13
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2017-01-10 20:45:26
+* @Last Modified time: 2017-01-13 09:15:29
 */
 
 #include "angle_calculate.h"
@@ -187,7 +187,7 @@ void angle_AHRS_getvalue(angle_t* pAngle, float sample_time)
         /*Init in the first time */
         static uint8_t is_init = 0;
         if(!is_init)
-                sampleFreq = 1.0/sample_time;
+                sampleFreq = 1.0f/sample_time;
 
         acc_data_t acc_data;
         gyro_data_t gyro_data;

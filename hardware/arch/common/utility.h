@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:43:01
-* @Last Modified by:   Kienltb
-* @Last Modified time: 2017-01-09 16:22:17
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2017-01-13 14:09:07
 */
 
 #ifndef __ULTILITY_H__
@@ -15,6 +15,10 @@
 
 /* Abs function*/
 #define ABS(x) (x < 0 ? -x : x)
+
+/* MIN - MAX function*/
+#define MAX(x,y) ((x) > (y) ? (x) : (y))
+#define MIN(x,y) ((x) < (y) ? (x) : (y))
 
 /* Convert String to Integer*/
 int to_int(char *s);

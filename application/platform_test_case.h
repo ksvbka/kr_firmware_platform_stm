@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-30 21:32:06
 * @Last Modified by:   Kienltb
-* @Last Modified time: 2016-12-23 10:22:01
+* @Last Modified time: 2017-01-11 16:54:49
 */
 
 #ifndef __PLATFORM_TEST_CASE__H__
@@ -10,13 +10,14 @@
 
 /* Hardware*/
 #include "system.h"
+#include "typedef.h"
 #include "gpio.h"
 #include "uart.h"
 #include "i2c.h"
 #include "adc.h"
 #include "pwm.h"
 #include "timer_hw.h"
-// #include "lcd_5110.h"
+#include "lcd_5110.h"
 // #include "flash.h"
 // #include "comparator.h"
 
@@ -38,7 +39,7 @@ void pwm_test_dimming_led(void);
 void adc_test(void); // Meansure value of PWM output
 void timer_hw_test(void);
 
-// void lcd_5110(void);
+void lcd_5110(void);
 /* Test case for Service*/
 void timer_test(void);
 void event_cb(void* param);

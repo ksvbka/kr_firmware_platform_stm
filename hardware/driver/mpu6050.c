@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:33:44
-* @Last Modified by:   Kienltb
-* @Last Modified time: 2017-01-11 16:48:46
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2017-01-13 16:13:41
 */
 
 #include "mpu6050.h"
@@ -224,14 +224,14 @@
 
 
 /* Off set value to calibrate Acc*/
-static int16_t acc_offsetX = 2101;
-static int16_t acc_offsetY = -57;
-static int16_t acc_offsetZ = 1201;
+static volatile int16_t acc_offsetX = 541;
+static volatile int16_t acc_offsetY = 33;
+static volatile int16_t acc_offsetZ = -7463;
 
 /*Offset value to calibrate Gyro */
-static int16_t gyro_offsetX = -41;
-static int16_t gyro_offsetY = 138;
-static int16_t gyro_offsetZ = -111;
+static volatile int16_t gyro_offsetX = -6;
+static volatile int16_t gyro_offsetY = 17;
+static volatile int16_t gyro_offsetZ = -11;
 
 /* Scale Value config for ACC - default is 2G*/
 float g_acc_scale  = SCALED_ACC_2G;
@@ -391,13 +391,19 @@ void mpu6050_calibrate(void)
                 if (ABS(mean_gz) <= gyro_deadzone) ready++;
                 else gyro_offsetZ  += mean_gz / (gyro_deadzone + 1);
 
-                if (ready == 6) break;
+                if (ready == 6) {
+                        uart_printf("\n Finish!");
+                        uart_printf("\n New offset: ax %d ay %d az %d gx %d gy %d gz %d\
+                                        ",acc_offsetX, acc_offsetY, acc_offsetZ,
+                                          gyro_offsetX, gyro_offsetY, gyro_offsetZ);
+                        break;
+                }
 
         }
 }
 
 
-#define BUFFER_SIZE 500
+#define BUFFER_SIZE 300
 
 void mean_sensor(void)
 {

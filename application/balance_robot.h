@@ -1,11 +1,11 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-12-11 23:29:12
-* @Last Modified by:   ksvbka
-* @Last Modified time: 2017-01-08 17:08:04
+* @Last Modified by:   Kienltb
+* @Last Modified time: 2017-01-11 18:08:27
 */
 
-/* Implement 2 wheels Blance robot project */
+/* Implement 2 wheels Balance robot project */
 
 #ifndef __BALANCE_ROBOT_H__
 #define __BALANCE_ROBOT_H__
@@ -17,6 +17,7 @@
 #include "i2c.h"
 #include "pwm.h"
 #include "timer_hw.h"
+#include "nrf24l01.h"
 
 /*Service*/
 #include "timer.h"
@@ -34,6 +35,14 @@ typedef struct robot {
         uint8_t button;
         bool state;
 }robot_t;
+
+/* Define GPIO pin for NRF24L01 module */
+
+#define RF_CE     GPIO_PIN(GPIO_PC, 8)
+#define RF_CS     GPIO_PIN(GPIO_PC, 8)
+#define RF_CLK    GPIO_PIN(GPIO_PC, 8)
+#define RF_MOSI   GPIO_PIN(GPIO_PC, 8)
+#define RF_MISO   GPIO_PIN(GPIO_PC, 8)
 
 /* Robot control */
 void robot_init(robot_t* robot);

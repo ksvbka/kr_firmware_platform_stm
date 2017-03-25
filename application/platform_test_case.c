@@ -1,8 +1,8 @@
 /*
 * @Author: Trung Kien
 * @Date:   2016-11-30 22:30:36
-* @Last Modified by:   Kienltb
-* @Last Modified time: 2016-12-27 10:51:08
+* @Last Modified by:   ksvbka
+* @Last Modified time: 2017-03-25 22:59:56
 */
 
 #include "platform_test_case.h"
@@ -15,23 +15,24 @@ void platform_test_case(void)
 {
     system_test();
     uart_test();
-    // gpio_test();
+    gpio_test();
 
-    // timer_hw_test();
+    timer_hw_test();
     /*Service testing*/
-    // timer_test();
-    // event_test();
-    // i2c_test();
-    // pwm_test();
-    // adc_test();
+
+    timer_test();
+    event_test();
+    i2c_test();
+    pwm_test();
+    adc_test();
+
     /* Supper loop*/
     while (1) {
         handle_timer_events();
         handle_event_queue();
     }
-    // pwm_test_dimming_led();
+    pwm_test_dimming_led();
 
-    // lcd_5110();
 }
 
 
@@ -58,7 +59,7 @@ void uart_test(void)
     uart_irq_register_callback(get_confirm);
     uart_printf("\nPlease get_confirm (press 'y')...");
 
-    while (!g_test_ok);
+    // while (!g_test_ok);
 
     uart_printf("\nuart hardware is ok");
 }
@@ -127,7 +128,7 @@ void button_press_cb(void* param)
         gpio_toggle(LED_GREEN);
 }
 
-void pwm_start(void)
+void pwm_start(void* parm)
 {
     static uint16_t duty_cycle = 10;
     pwm_set_duty(PWM_CHANNEL_1, duty_cycle);
@@ -287,8 +288,11 @@ void handle_event_queue()
 //     }
 // }
 
-// void lcd_5110(void) {
-//     lcd_init(70,0,40);
-//     lcd_clear();
-//     lcd_printf("Kienltb");
-// }
+void lcd_5110(void) {
+    lcd_init(70,0,40);
+    lcd_clear();
+    lcd_printf_char('a');
+    lcd_printf_char('b');
+    lcd_printf_char('c');
+    lcd_printf("Kienltb");
+}

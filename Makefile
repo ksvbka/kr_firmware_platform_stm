@@ -4,20 +4,21 @@ CC=arm-none-eabi-gcc
 OBJCOPY=arm-none-eabi-objcopy
 OBJDUMP=arm-none-eabi-objdump
 SIZE=arm-none-eabi-size
+ARCH=stm32f0
 
 PROJ_NAME=kr_firmware_platform
-
+ARCH_DIR=hardware/arch/$(ARCH)
 # Location of the Libraries folder from the STM32F0xx Standard Peripheral Library
-STD_PERIPH_LIB=libraries
+STD_PERIPH_LIB=$(ARCH_DIR)/libraries
 
 # Location of the linker scripts
-LDSCRIPT_INC=device/ldscripts
+LDSCRIPT_INC=$(ARCH_DIR)/device/ldscripts
 
 # location of OpenOCD Board .cfg files (only used with 'make program')
 OPENOCD_BOARD_DIR=/usr/share/openocd/scripts/board
 
 # Configuration (cfg) file containing programming directives for OpenOCD
-OPENOCD_PROC_FILE=extra/stm32f0-openocd.cfg
+OPENOCD_PROC_FILE=$(ARCH_DIR)/extra/stm32f0-openocd.cfg
 
 # Colour code for printing
 
@@ -45,22 +46,22 @@ BIN_DIR		= $(BUILD_DIR)/bin
 OUT 		= $(BIN_DIR)/$(PROJ_NAME)
 
 # add startup file to build
-SRC_STARTUP_DIR = $(ROOT)/device/
+SRC_STARTUP_DIR = $(ROOT)/$(ARCH_DIR)/device/
 SRC_STARTUP = $(SRC_STARTUP_DIR)/startup_stm32f0xx.s
 OBJ_STARTUP = $(patsubst %.s,$(OBJ_DIR)/%.o,$(notdir $(SRC_STARTUP)))
 
-# Hardware object
-SRC_HWDIR 	= $(ROOT)/hardware/src
+# Hardware core object
+SRC_HWDIR 	= $(ROOT)/$(ARCH_DIR)
 SRC_HW 		= $(wildcard $(SRC_HWDIR)/*.c)
 OBJ_HW 		= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_HW)))
 
-# Peripherals object
-SRC_PERDIR 	= $(ROOT)/hardware_periph/src
+# Driver object
+SRC_PERDIR 	= $(ROOT)/driver
 SRC_PER		= $(wildcard $(SRC_PERDIR)/*.c)
 OBJ_PER		= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_PER)))
 
 # Service source dir
-SRC_SVDIR 	= $(ROOT)/service/src
+SRC_SVDIR 	= $(ROOT)/service
 SRC_SV 		= $(wildcard $(SRC_SVDIR)/*.c)
 OBJ_SV		= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_SV)))
 
@@ -72,10 +73,10 @@ OBJ_APP 	= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_APP)))
 CFLAGS += -I $(STD_PERIPH_LIB) -I $(STD_PERIPH_LIB)/CMSIS/Device/ST/STM32F0xx/Include
 CFLAGS += -I $(STD_PERIPH_LIB)/CMSIS/Include -I $(STD_PERIPH_LIB)/STM32F0xx_StdPeriph_Driver/inc
 CFLAGS += -include $(STD_PERIPH_LIB)/stm32f0xx_conf.h
-CFLAGS += -I $(ROOT)/hardware/include
-CFLAGS += -I $(ROOT)/service/include
-CFLAGS += -I $(ROOT)/hardware_periph/include
+CFLAGS += -I $(ROOT)/hardware/driver
+CFLAGS += -I $(ROOT)/hardware/arch/common
 CFLAGS += -I $(ROOT)/application
+CFLAGS += -I $(ROOT)/service
 
 # need if you want to build with -DUSE_CMSIS
 #SRCS += stm32f0_discovery.c
@@ -138,15 +139,6 @@ program: $(OUT).bin
 debug_server: $(OUT).elf
 	# . extra/debug_nemivier.sh
 	openocd -f $(OPENOCD_BOARD_DIR)/stm32f0discovery.cfg
-
-debug_nemivier:
-	arm-none-eabi-gdb --batch --command=config_gdb.cfg $(OUT).elf
-	file $(OUT).elf
-	nemiver --remote=localhost:3333 --gdb-binary=arm-none-eabi-gdb $(OUT).elf
-
-debug_cli:
-	arm-none-eabi-gdb --silent --command=config_gdb.cfg $(OUT).elf
-
 clean:
 	find ./ -name '*~' | xargs rm -f
 	rm -f *.o
