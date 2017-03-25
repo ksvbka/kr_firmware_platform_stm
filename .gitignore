@@ -6,6 +6,17 @@ libraries/*.o
 *.obj
 *.elf
 
+#assembly file
+*.lib
+*.rel
+*.lst
+*.ihx
+*.sym
+*.asm
+*.lk
+*.map
+*.rst
+
 # Precompiled Headers
 *.gch
 *.pch
