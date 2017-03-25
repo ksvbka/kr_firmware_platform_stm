@@ -1,0 +1,17 @@
+Please install sdcc to build stm8s under ubuntu
+Ubuntu 14.10
+        sudo apt-get install sdcc
+Ubuntu 14.04
+        sudo add-apt-repository ppa:laczik/ppa
+        sudo apt-get update
+        sudo apt-get remove sdcc sdcc-libraries
+        sudo apt-get install sdcc
+
+Tool to flash
+git clone https://github.com/vdudouyt/stm8flash.git
+cd stm8flash
+make
+sudo make install
+
+Please refer link for more infor
+http://www.cnx-software.com/2015/04/13/how-to-program-stm8s-1-board-in-linux/
