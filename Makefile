@@ -47,18 +47,18 @@ OUT 		= $(BIN_DIR)/$(PROJ_NAME)
 
 # add startup file to build
 SRC_STARTUP_DIR = $(ROOT)/$(ARCH_DIR)/device/
-SRC_STARTUP = $(SRC_STARTUP_DIR)/startup_stm32f0xx.s
-OBJ_STARTUP = $(patsubst %.s,$(OBJ_DIR)/%.o,$(notdir $(SRC_STARTUP)))
+SRC_STARTUP 	= $(SRC_STARTUP_DIR)/startup_stm32f0xx.s
+OBJ_STARTUP 	= $(patsubst %.s,$(OBJ_DIR)/%.o,$(notdir $(SRC_STARTUP)))
 
 # Hardware core object
-SRC_HWDIR 	= $(ROOT)/$(ARCH_DIR)
-SRC_HW 		= $(wildcard $(SRC_HWDIR)/*.c)
-OBJ_HW 		= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_HW)))
+SRC_CORE_DIR 	= $(ROOT)/$(ARCH_DIR)
+SRC_CORE 	= $(wildcard $(SRC_CORE_DIR)/*.c)
+OBJ_CORE 	= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_CORE)))
 
 # Driver object
-SRC_PERDIR 	= $(ROOT)/driver
-SRC_PER		= $(wildcard $(SRC_PERDIR)/*.c)
-OBJ_PER		= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_PER)))
+SRC_DRIVER_DIR 	= $(ROOT)/hardware/driver
+SRC_DRIVER	= $(wildcard $(SRC_DRIVER_DIR)/*.c)
+OBJ_DRIVER	= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_DRIVER)))
 
 # Service source dir
 SRC_SVDIR 	= $(ROOT)/service
@@ -93,7 +93,7 @@ lib:
 
 proj: 	$(BIN_DIR)/$(PROJ_NAME).elf
 
-$(OUT).elf : $(OBJ_HW) $(OBJ_PER) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
+$(OUT).elf : $(OBJ_CORE) $(OBJ_DRIVER) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
 	@echo "$(RED)Lingking ...$(NC)"
 	@mkdir -p $(BIN_DIR)
 	@$(CC) $(CFLAGS) $^ -o $@ -L$(STD_PERIPH_LIB) -lstm32f0 -L$(LDSCRIPT_INC) -Tstm32f0.ld -lm #add lm for math.h
@@ -110,13 +110,13 @@ $(OBJ_DIR)/%.o:$(SRC_STARTUP_DIR)/%.s
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Bulding hardware object
-$(OBJ_DIR)/%.o:$(SRC_HWDIR)/%.c
+$(OBJ_DIR)/%.o:$(SRC_CORE_DIR)/%.c
 	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 # Bulding peripherals object
-$(OBJ_DIR)/%.o:$(SRC_PERDIR)/%.c
+$(OBJ_DIR)/%.o:$(SRC_DRIVER_DIR)/%.c
 	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
