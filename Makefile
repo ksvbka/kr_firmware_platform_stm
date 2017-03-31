@@ -34,6 +34,13 @@ CFLAGS  = -Wall -g -std=c99 -Os
 CFLAGS += -mlittle-endian -mcpu=cortex-m0  -march=armv6-m -mthumb
 CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -Wl,--gc-sections -Wl,-Map=$(BUILD_DIR)/$(PROJ_NAME).map
+CFLAGS += -I $(STD_PERIPH_LIB) -I $(STD_PERIPH_LIB)/CMSIS/Device/ST/STM32F0xx/Include
+CFLAGS += -I $(STD_PERIPH_LIB)/CMSIS/Include -I $(STD_PERIPH_LIB)/STM32F0xx_StdPeriph_Driver/inc
+CFLAGS += -include $(STD_PERIPH_LIB)/stm32f0xx_conf.h
+CFLAGS += -I hardware/driver
+CFLAGS += -I hardware/arch/common
+CFLAGS += -I application
+CFLAGS += -I service
 ###################################################
 
 vpath %.c application service hardware/driver
@@ -43,8 +50,9 @@ vpath %.s $(ARCH_DIR)/device
 BUILD_DIR 	= build
 OUT 		= $(BUILD_DIR)/$(PROJ_NAME)
 
-SRC_C = $(wildcard application/*.c)	\
-	$(wildcard hardware/driver/*.c)	\
+SRC_C = $(wildcard application/*.c)		\
+	$(wildcard hardware/driver/*.c)		\
+	$(wildcard hardware/arch/$(ARCH)/*.c)	\
 	$(wildcard service/*.c)
 
 # add startup file to build
@@ -52,18 +60,6 @@ SRC_S = $(wildcard $(ARCH_DIR)/device/*.s)
 
 OBJ =  $(patsubst %c, $(BUILD_DIR)/%o, $(SRC_C))
 OBJ += $(patsubst %s, $(BUILD_DIR)/%o, $(SRC_S))
-
-CFLAGS += -I $(STD_PERIPH_LIB) -I $(STD_PERIPH_LIB)/CMSIS/Device/ST/STM32F0xx/Include
-CFLAGS += -I $(STD_PERIPH_LIB)/CMSIS/Include -I $(STD_PERIPH_LIB)/STM32F0xx_StdPeriph_Driver/inc
-CFLAGS += -include $(STD_PERIPH_LIB)/stm32f0xx_conf.h
-CFLAGS += -I hardware/driver
-CFLAGS += -I hardware/arch/common
-CFLAGS += -I application
-CFLAGS += -I service
-
-# need if you want to build with -DUSE_CMSIS
-#SRCS += stm32f0_discovery.c
-#SRCS += stm32f0_discovery.c stm32f0xx_it.c
 
 ###################################################
 vpath %c application hardware/driver service
