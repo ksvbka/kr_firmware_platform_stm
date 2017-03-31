@@ -33,56 +33,41 @@ PURPLE=\033[0;35m
 CFLAGS  = -Wall -g -std=c99 -Os
 CFLAGS += -mlittle-endian -mcpu=cortex-m0  -march=armv6-m -mthumb
 CFLAGS += -ffunction-sections -fdata-sections
-CFLAGS += -Wl,--gc-sections -Wl,-Map=$(BIN_DIR)/$(PROJ_NAME).map
+CFLAGS += -Wl,--gc-sections -Wl,-Map=$(BUILD_DIR)/$(PROJ_NAME).map
 ###################################################
 
-vpath %.c application
+vpath %.c application service hardware/driver
 vpath %.a $(STD_PERIPH_LIB)
+vpath %.s $(ARCH_DIR)/device
 
-ROOT=$(shell pwd)
-BUILD_DIR 	= $(ROOT)/build
-OBJ_DIR		= $(BUILD_DIR)/obj
-BIN_DIR		= $(BUILD_DIR)/bin
-OUT 		= $(BIN_DIR)/$(PROJ_NAME)
+BUILD_DIR 	= build
+OUT 		= $(BUILD_DIR)/$(PROJ_NAME)
+
+SRC_C = $(wildcard application/*.c)	\
+	$(wildcard hardware/driver/*.c)	\
+	$(wildcard service/*.c)
 
 # add startup file to build
-SRC_STARTUP_DIR = $(ROOT)/$(ARCH_DIR)/device/
-SRC_STARTUP 	= $(SRC_STARTUP_DIR)/startup_stm32f0xx.s
-OBJ_STARTUP 	= $(patsubst %.s,$(OBJ_DIR)/%.o,$(notdir $(SRC_STARTUP)))
+SRC_S = $(wildcard $(ARCH_DIR)/device/*.s)
 
-# Hardware core object
-SRC_CORE_DIR 	= $(ROOT)/$(ARCH_DIR)
-SRC_CORE 	= $(wildcard $(SRC_CORE_DIR)/*.c)
-OBJ_CORE 	= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_CORE)))
-
-# Driver object
-SRC_DRIVER_DIR 	= $(ROOT)/hardware/driver
-SRC_DRIVER	= $(wildcard $(SRC_DRIVER_DIR)/*.c)
-OBJ_DRIVER	= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_DRIVER)))
-
-# Service source dir
-SRC_SVDIR 	= $(ROOT)/service
-SRC_SV 		= $(wildcard $(SRC_SVDIR)/*.c)
-OBJ_SV		= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_SV)))
-
-# Application source dir
-SRC_APPDIR 	= $(ROOT)/application
-SRC_APP 	= $(wildcard $(SRC_APPDIR)/*.c)
-OBJ_APP 	= $(patsubst %.c,$(OBJ_DIR)/%.o,$(notdir $(SRC_APP)))
+OBJ =  $(patsubst %c, $(BUILD_DIR)/%o, $(SRC_C))
+OBJ += $(patsubst %s, $(BUILD_DIR)/%o, $(SRC_S))
 
 CFLAGS += -I $(STD_PERIPH_LIB) -I $(STD_PERIPH_LIB)/CMSIS/Device/ST/STM32F0xx/Include
 CFLAGS += -I $(STD_PERIPH_LIB)/CMSIS/Include -I $(STD_PERIPH_LIB)/STM32F0xx_StdPeriph_Driver/inc
 CFLAGS += -include $(STD_PERIPH_LIB)/stm32f0xx_conf.h
-CFLAGS += -I $(ROOT)/hardware/driver
-CFLAGS += -I $(ROOT)/hardware/arch/common
-CFLAGS += -I $(ROOT)/application
-CFLAGS += -I $(ROOT)/service
+CFLAGS += -I hardware/driver
+CFLAGS += -I hardware/arch/common
+CFLAGS += -I application
+CFLAGS += -I service
 
 # need if you want to build with -DUSE_CMSIS
 #SRCS += stm32f0_discovery.c
 #SRCS += stm32f0_discovery.c stm32f0xx_it.c
 
 ###################################################
+vpath %c application hardware/driver service
+vpath %s $(ARCH_DIR)/device
 
 .PHONY: lib proj
 
@@ -91,46 +76,25 @@ all: lib proj
 lib:
 	$(MAKE) -C $(STD_PERIPH_LIB)
 
-proj: 	$(BIN_DIR)/$(PROJ_NAME).elf
+proj: 	$(BUILD_DIR)/$(PROJ_NAME).elf
 
-$(OUT).elf : $(OBJ_CORE) $(OBJ_DRIVER) $(OBJ_SV) $(OBJ_APP) $(OBJ_STARTUP)
+$(OUT).elf : $(OBJ)
 	@echo "$(RED)Lingking ...$(NC)"
-	@mkdir -p $(BIN_DIR)
+	@mkdir -p $(BUILD_DIR)
 	@$(CC) $(CFLAGS) $^ -o $@ -L$(STD_PERIPH_LIB) -lstm32f0 -L$(LDSCRIPT_INC) -Tstm32f0.ld -lm #add lm for math.h
 
-	@$(OBJCOPY) -O ihex $(OUT).elf $(BIN_DIR)/$(PROJ_NAME).hex
-	@$(OBJCOPY) -O binary $(OUT).elf $(BIN_DIR)/$(PROJ_NAME).bin
-	@$(OBJDUMP) -St $(OUT).elf >$(BIN_DIR)/$(PROJ_NAME).lst
+	@$(OBJCOPY) -O ihex $(OUT).elf $(BUILD_DIR)/$(PROJ_NAME).hex
+	@$(OBJCOPY) -O binary $(OUT).elf $(BUILD_DIR)/$(PROJ_NAME).bin
+	@$(OBJDUMP) -St $(OUT).elf >$(BUILD_DIR)/$(PROJ_NAME).lst
 	$(SIZE) $(OUT).elf
 	@echo "$(RED)Successful! $(NC)"
 
-$(OBJ_DIR)/%.o:$(SRC_STARTUP_DIR)/%.s
-	@echo  "$(GREEN)Building $(notdir $<)...$(NC)"
-	@mkdir -p $(OBJ_DIR)
+$(BUILD_DIR)/%o:%c
+	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-# Bulding hardware object
-$(OBJ_DIR)/%.o:$(SRC_CORE_DIR)/%.c
-	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
-	@mkdir -p $(OBJ_DIR)
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-# Bulding peripherals object
-$(OBJ_DIR)/%.o:$(SRC_DRIVER_DIR)/%.c
-	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
-	@mkdir -p $(OBJ_DIR)
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-# Bulding service object
-$(OBJ_DIR)/%.o:$(SRC_SVDIR)/%.c
-	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
-	@mkdir -p $(OBJ_DIR)
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-# Bulding application object
-$(OBJ_DIR)/%.o:$(SRC_APPDIR)/%.c
-	@echo "$(GREEN)Building $(notdir $<)...$(NC)"
-	@mkdir -p $(OBJ_DIR)
+$(BUILD_DIR)/%o:%s
+	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 program: $(OUT).bin
