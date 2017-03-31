@@ -8,6 +8,7 @@ ARCH=stm32f0
 
 PROJ_NAME=kr_firmware_platform
 ARCH_DIR=hardware/arch/$(ARCH)
+
 # Location of the Libraries folder from the STM32F0xx Standard Peripheral Library
 STD_PERIPH_LIB=$(ARCH_DIR)/libraries
 
@@ -21,7 +22,6 @@ OPENOCD_BOARD_DIR=/usr/share/openocd/scripts/board
 OPENOCD_PROC_FILE=$(ARCH_DIR)/extra/stm32f0-openocd.cfg
 
 # Colour code for printing
-
 NC=\033[0m
 RED=\033[0;31m
 BLUE=\033[0;34m
@@ -79,10 +79,11 @@ $(OUT).elf : $(OBJ)
 	@mkdir -p $(BUILD_DIR)
 	@$(CC) $(CFLAGS) $^ -o $@ -L$(STD_PERIPH_LIB) -lstm32f0 -L$(LDSCRIPT_INC) -Tstm32f0.ld -lm #add lm for math.h
 
-	@$(OBJCOPY) -O ihex $(OUT).elf $(BUILD_DIR)/$(PROJ_NAME).hex
-	@$(OBJCOPY) -O binary $(OUT).elf $(BUILD_DIR)/$(PROJ_NAME).bin
-	@$(OBJDUMP) -St $(OUT).elf >$(BUILD_DIR)/$(PROJ_NAME).lst
+	@$(OBJCOPY) -O ihex   $(OUT).elf   $(BUILD_DIR)/$(PROJ_NAME).hex
+	@$(OBJCOPY) -O binary $(OUT).elf   $(BUILD_DIR)/$(PROJ_NAME).bin
+	@$(OBJDUMP) -St       $(OUT).elf > $(BUILD_DIR)/$(PROJ_NAME).lst
 	$(SIZE) $(OUT).elf
+
 	@echo "$(RED)Successful! $(NC)"
 
 $(BUILD_DIR)/%o:%c
