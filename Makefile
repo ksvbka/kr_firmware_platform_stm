@@ -6,7 +6,12 @@ OBJDUMP=arm-none-eabi-objdump
 SIZE=arm-none-eabi-size
 ARCH=stm32f0
 
-PROJ_NAME=kr_firmware_platform
+PROJ_NAME	= kr_firmware_platform
+BUILD_DIR 	= build
+OUT 		= $(BUILD_DIR)/$(PROJ_NAME)
+TARGET 		= $(BUILD_DIR)/$(PROJ_NAME).elf
+
+
 ARCH_DIR=hardware/arch/$(ARCH)
 
 # Location of the Libraries folder from the STM32F0xx Standard Peripheral Library
@@ -41,14 +46,16 @@ CFLAGS += -I hardware/driver
 CFLAGS += -I hardware/arch/common
 CFLAGS += -I application
 CFLAGS += -I service
+
+LINK_FLAGS  = -L$(STD_PERIPH_LIB) -L$(LDSCRIPT_INC)
+LINK_FLAGS += -lstm32f0 -lm #add lm for math.h
+LINK_FLAGS += -Tstm32f0.ld
+
 ###################################################
 
 vpath %.c application service hardware/driver
 vpath %.a $(STD_PERIPH_LIB)
 vpath %.s $(ARCH_DIR)/device
-
-BUILD_DIR 	= build
-OUT 		= $(BUILD_DIR)/$(PROJ_NAME)
 
 SRC_C = $(wildcard application/*.c)		\
 	$(wildcard hardware/driver/*.c)		\
@@ -72,22 +79,23 @@ all: lib proj
 lib:
 	$(MAKE) -C $(STD_PERIPH_LIB)
 
-proj: 	$(BUILD_DIR)/$(PROJ_NAME).elf
+proj: 	$(TARGET)
 
-$(OUT).elf : $(OBJ)
+$(TARGET) : $(OBJ)
 	@echo "$(RED)Lingking ...$(NC)"
 	@mkdir -p $(BUILD_DIR)
-	@$(CC) $(CFLAGS) $^ -o $@ -L$(STD_PERIPH_LIB) -lstm32f0 -L$(LDSCRIPT_INC) -Tstm32f0.ld -lm #add lm for math.h
+	@$(CC) $(CFLAGS) $^ -o $@ $(LINK_FLAGS)
 
-	@$(OBJCOPY) -O ihex   $(OUT).elf   $(BUILD_DIR)/$(PROJ_NAME).hex
-	@$(OBJCOPY) -O binary $(OUT).elf   $(BUILD_DIR)/$(PROJ_NAME).bin
-	@$(OBJDUMP) -St       $(OUT).elf > $(BUILD_DIR)/$(PROJ_NAME).lst
-	$(SIZE) $(OUT).elf
+	@$(OBJCOPY) -O ihex   $(TARGET)   $(OUT).hex
+	@$(OBJCOPY) -O binary $(TARGET)   $(OUT).bin
+	@$(OBJDUMP) -St       $(TARGET) > $(OUT).lst
+	$(SIZE) $(TARGET)
 
 	@echo "$(RED)Successful! $(NC)"
 
 $(BUILD_DIR)/%o:%c
 	@mkdir -p $(dir $@)
+	@echo "Building file: $< ..."
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/%o:%s
@@ -95,9 +103,9 @@ $(BUILD_DIR)/%o:%s
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 program: $(OUT).bin
-	openocd -f $(OPENOCD_BOARD_DIR)/stm32f0discovery.cfg -f $(OPENOCD_PROC_FILE) -c "stm_flash `pwd`/build/bin/$(PROJ_NAME).bin" -c shutdown
+	openocd -f $(OPENOCD_BOARD_DIR)/stm32f0discovery.cfg -f $(OPENOCD_PROC_FILE) -c "stm_flash `pwd` $(OUT).bin" -c shutdown
 
-debug_server: $(OUT).elf
+debug_server: $(TARGET)
 	# . extra/debug_nemivier.sh
 	openocd -f $(OPENOCD_BOARD_DIR)/stm32f0discovery.cfg
 clean:
