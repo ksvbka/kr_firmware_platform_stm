@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-11-29 11:33:44
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2017-01-13 16:13:41
+* @Last Modified time: 2017-04-02 10:39:36
 */
 
 #include "mpu6050.h"
@@ -265,6 +265,10 @@ void mpu6050_init(uint8_t acc_scale_config, uint8_t gyro_scale_config)
                 g_acc_scale  =   SCALED_ACC_16G;
                 acc_config   =   AFS_SEL_SCALE_16G;
                 break;
+        default:
+                /*Error parameter, using default config*/
+                acc_config = ACC_CONFIG_2G;
+
         }
         i2c_write_byte(MPU6050_ADDRESS, MPU6050_ACCEL_CONFIG, acc_config);
 
@@ -287,7 +291,12 @@ void mpu6050_init(uint8_t acc_scale_config, uint8_t gyro_scale_config)
                 g_gyro_scale  =  SCALED_GYRO_2000;
                 gyro_config   =  PS_SEL_SCALE_2000;
                 break;
+        default:
+                /*Error parameter, using default config*/
+                g_gyro_scale  =  SCALED_GYRO_250;
+                gyro_config   =  PS_SEL_SCALE_250;
         }
+
         /* I2C_WriteByte(gyro_config, MPU6050_ADDRESS, MPU6050_GYRO_CONFIG);*/
         i2c_write_byte(MPU6050_ADDRESS, MPU6050_GYRO_CONFIG, gyro_config);
 
@@ -366,11 +375,11 @@ void mpu6050_calibrate(void)
                 uart_printf("\nmean value: %d\t %d\t %d\t %d\t %d\t %d\t ", mean_ax, mean_ay, mean_az, mean_gx, mean_gy, mean_gz);
 
                 uart_printf("\noffset    : %d\t %d\t %d\t %d\t %d\t %d\t ", acc_offsetX\
-                                                                , acc_offsetY\
-                                                                , acc_offsetZ\
-                                                                , gyro_offsetX\
-                                                                , gyro_offsetY\
-                                                                , gyro_offsetZ);
+                            , acc_offsetY\
+                            , acc_offsetZ\
+                            , gyro_offsetX\
+                            , gyro_offsetY\
+                            , gyro_offsetZ);
 
                 if (ABS(mean_ax) <= acel_deadzone) ready++;
                 else acc_offsetX += mean_ax / acel_deadzone;
@@ -394,8 +403,8 @@ void mpu6050_calibrate(void)
                 if (ready == 6) {
                         uart_printf("\n Finish!");
                         uart_printf("\n New offset: ax %d ay %d az %d gx %d gy %d gz %d\
-                                        ",acc_offsetX, acc_offsetY, acc_offsetZ,
-                                          gyro_offsetX, gyro_offsetY, gyro_offsetZ);
+                                        ", acc_offsetX, acc_offsetY, acc_offsetZ,
+                                    gyro_offsetX, gyro_offsetY, gyro_offsetZ);
                         break;
                 }
 

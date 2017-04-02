@@ -2,7 +2,7 @@
 * @Author: Trung Kien
 * @Date:   2016-12-11 23:28:00
 * @Last Modified by:   ksvbka
-* @Last Modified time: 2016-12-23 01:18:47
+* @Last Modified time: 2017-04-02 10:49:10
 */
 
 #include "gpio.h"
@@ -369,6 +369,9 @@ static uint8_t get_exti_port_source(uint8_t gpio)
         case GPIO_PF:
                 EXTI_PortSourceGPIOx = EXTI_PortSourceGPIOF;
                 break;
+        default:
+                /* Use default param*/
+                EXTI_PortSourceGPIOx = EXTI_PortSourceGPIOA;
         }
         return EXTI_PortSourceGPIOx;
 }
