@@ -23,7 +23,7 @@ Nếu cài đặt đúng theo kiến trúc như trên, khi chuyển đổi nền
 Dùng gcc để build cho các dòng arm. Để cài đặt có thể dùng lệnh với ubuntu như sau
 
 ```sh
-apt-get install gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi
+sudo apt install gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi gcc-arm-none-eabi-source
 ```
 Kiểm tra bằng lệnh
 
